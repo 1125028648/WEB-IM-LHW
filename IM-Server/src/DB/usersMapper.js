@@ -1,6 +1,6 @@
 exports.queryUser = (db, email, password) =>{
     return new Promise((resolve, reject) => {
-        let sql = `SELECT id, username, password, role, email, birthday, 
+        let sql = `SELECT id, nickname, password, role, email, birthday, 
         sex FROM users WHERE email = ? and password = ?`;
 
         db.query(sql,
@@ -21,7 +21,7 @@ exports.queryUser = (db, email, password) =>{
 
 exports.userLogin = (db, email, password) => {
     return new Promise((resolve, reject) => {
-        let sql = `SELECT id, username, password, role, email, birthday, 
+        let sql = `SELECT id, nickname, password, role, email, birthday, 
         sex FROM users WHERE email = ? and password = ?`;
 
         db.query(sql,
@@ -50,7 +50,7 @@ exports.userLogin = (db, email, password) => {
 
 exports.insertUser = (db, user) => {
     return new Promise((resolve, reject) => {
-        const {username, password, email} = user;
+        const {nickname, password, email} = user;
         const role = 1;
         // 查询用户邮箱是否已经注册过
         let queryEmail = `SELECT count(*) as nums FROM users WHERE email = ?`;
@@ -69,9 +69,9 @@ exports.insertUser = (db, user) => {
                     message: 'email is used.'
                 });
             }else{
-                let sql = `INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)`;
+                let sql = `INSERT INTO users (nickname, password, role, email) VALUES (?, ?, ?, ?)`;
 
-                db.query(sql, [username, password, role, email], function (err, results, fields) {
+                db.query(sql, [nickname, password, role, email], function (err, results, fields) {
                     if(err) {
                         resolve({
                             message: 'error'
