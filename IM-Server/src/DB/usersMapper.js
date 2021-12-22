@@ -7,6 +7,7 @@ exports.queryUser = (db, email, password) =>{
         [email, password], function (err, results, fields) {
             if(err) {
                 resolve({
+                    flag: false,
                     message: 'error'
                 });
                 return;
@@ -15,6 +16,7 @@ exports.queryUser = (db, email, password) =>{
             var dataString = JSON.stringify(results);
             var data = JSON.parse(dataString);
             resolve({
+                flag: true,
                 message: 'success',
                 data: data
             });
@@ -30,6 +32,7 @@ exports.userLogin = (db, email, password) => {
         [email, password], function (err, results, fields) {
             if(err) {
                 resolve({
+                    flag: false,
                     message: 'error'
                 });
                 return;
@@ -43,6 +46,7 @@ exports.userLogin = (db, email, password) => {
                 db.query(query_user, [data[0].id], function(err, results, fields){
                     if(err) {
                         resolve({
+                            flag: false,
                             message: 'error'
                         });
                         return;
@@ -58,6 +62,7 @@ exports.userLogin = (db, email, password) => {
                             db.query(update_user, [1, data[0].id], function(err, results, fields){
                                 if(err) {
                                     resolve({
+                                        flag: false,
                                         message: 'error'
                                     });
                                     return;
@@ -71,6 +76,7 @@ exports.userLogin = (db, email, password) => {
                         db.query(insert_user, [data[0].id, 1], function(err, results, fields){
                             if(err) {
                                 resolve({
+                                    flag: false,
                                     message: 'error'
                                 });
                                 return;
@@ -80,11 +86,13 @@ exports.userLogin = (db, email, password) => {
                 });
 
                 resolve({
+                    flag: true,
                     message: 'success',
                     data: data[0]
                 });
             }else{
                 resolve({
+                    flag: false,
                     message: 'failed'
                 })
             }
@@ -101,6 +109,7 @@ exports.insertUser = (db, user) => {
         db.query(queryEmail, [email], function(err, results, fields){
             if(err) {
                 resolve({
+                    flag: false,
                     message: 'error'
                 });
                 return;
@@ -110,6 +119,7 @@ exports.insertUser = (db, user) => {
             let data = JSON.parse(dataString);
             if(data[0].nums > 0){
                 resolve({
+                    flag: false,
                     message: 'email is used.'
                 });
             }else{
@@ -118,6 +128,7 @@ exports.insertUser = (db, user) => {
                 db.query(sql, [nickname, password, role, email], function (err, results, fields) {
                     if(err) {
                         resolve({
+                            flag: false,
                             message: 'error'
                         });
                         return;
@@ -125,7 +136,10 @@ exports.insertUser = (db, user) => {
 
                     let dataString = JSON.stringify(results);
                     let data = JSON.parse(dataString);
-                    resolve(data);
+                    resolve({
+                        flag: true,
+                        message: 'success'
+                    });
                 });
             }
         })
@@ -139,12 +153,14 @@ exports.exitUser = (db, userId) => {
         db.query(query_user, [userId], function(err, results, fields){
             if(err) {
                 resolve({
+                    flag: false,
                     message: 'error'
                 });
                 return;
             };
 
             resolve({
+                flag: true,
                 message: 'success'
             });
         });

@@ -67,7 +67,7 @@ router.post('/exit',async (ctx, next) => {
         if(ctx.session.user){
             ctx.session = null;
         }
-        ctx.body = 'logout.'
+        ctx.body = res;
     });
 });
 
