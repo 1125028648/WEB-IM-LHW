@@ -39,10 +39,10 @@ router.get('/', async (ctx, next) => {
 });
 
 router.post('/login', async (ctx, next) =>{
-    let {email, password} = ctx.request.body;
+    let {email, password, remember} = ctx.request.body;
     await usersMapper.userLogin(db, email, password).then(res =>{
         if(res.message === 'success'){
-            ctx.session.user = email;
+            ctx.session.user = res.data;
         }
         ctx.body = res;
     });
@@ -63,10 +63,12 @@ router.post('/test',async (ctx, next) => {
 });
 
 router.post('/exit',async (ctx, next) => {
-    if(ctx.session.user){
-        ctx.session = null;
-    }
-    ctx.body = 'logout.'
+    await usersMapper.exitUser(db, ctx.session.user.id).then(res => {
+        if(ctx.session.user){
+            ctx.session = null;
+        }
+        ctx.body = 'logout.'
+    });
 });
 
 app.use(router.routes());
