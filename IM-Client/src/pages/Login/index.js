@@ -1,23 +1,32 @@
 import React, { Component } from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button } from 'antd';
+import { Navigate  } from "react-router-dom";
 import './index.css'
-import response from 'koa/lib/response';
 
 export default class Login extends Component  {
-    state = {
-        email: "",
-        password: "",
+    constructor ( props ) {
+        super(props);
+        this.state = {
+            login: false
+        }
     }
 
     onFinish = (values) => {
         values.password = this.$md5(values.password);
-        console.log(values.password)
-        this.$axios.post("http://localhost:8000/login", values).then(
-            response => {
-                console.log("response:", response);
-            }).catch(
-                err => console.log(err)
-            )
+        // console.log(values.password)
+
+        this.$axios.post("/login", values).then(
+            res => {
+                if(res.data.flag === true){
+                    this.setState({
+                        login: true
+                    });
+                }else{
+                    // 登录失败提示, 这里加个提示弹窗
+                    console.log(res.data.data);
+                    console.log(res.data.message);
+                }
+            });
     };
 
     onFinishFailed = (errorInfo) => {
@@ -25,6 +34,9 @@ export default class Login extends Component  {
     }
     
     render(){
+        if(this.state.login){
+            return <Navigate to='/homePage'/>
+        }
         return (
             <div className='loginFrame'>
                 <h1 style={{textAlign: "center",fontWeight: 'bolder', color: "#1890ff"}}>系统登录</h1>
@@ -32,7 +44,7 @@ export default class Login extends Component  {
                     name='login' 
                     labelCol = {{span: 8,}} 
                     wrapperCol={{span: 16}} 
-                    initialValues={{remember: true,}}
+                    // initialValues={{remember: true,}}
                     onFinish={this.onFinish}
                     onFinishFailed={this.onFinishFailed}
                     autoComplete="off"
@@ -60,16 +72,6 @@ export default class Login extends Component  {
                         ]}
                     >
                         <Input.Password className='input' />
-                    </Form.Item>
-                    <Form.Item
-                        name="remember"
-                        valuePropName="checked"
-                        wrapperCol={{
-                            offset: 8,
-                            span: 16,
-                        }}
-                    >
-                        <Checkbox>记住我</Checkbox>
                     </Form.Item>
                     <Form.Item
                         wrapperCol={{
