@@ -39,7 +39,7 @@ export default class Login extends Component  {
             return <Navigate to='/homePage'/>
         }
         return (
-            <div className='background'>
+            <div className='loginBackground'>
                 <div className='loginFrame'>
                     <h1 style={{textAlign: "center",fontWeight: 'bolder', color: "#1890ff"}}>系统登录</h1>
                     <Form
