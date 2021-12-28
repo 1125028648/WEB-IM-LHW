@@ -1,0 +1,12 @@
+.background {
+    position: absolute;
+    height: 310px;
+    width: 500px;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background:rgba(255, 255, 255, 0.4);
+    padding: 25px 50px;
+  }
