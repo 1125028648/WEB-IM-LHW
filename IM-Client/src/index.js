@@ -4,10 +4,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
+import md5 from 'js-md5'
 
 axios.defaults.baseURL = 'http://localhost:8000';
 axios.defaults.withCredentials = 'true';
 React.Component.prototype.$axios = axios;
+React.Component.prototype.$md5 = md5;
 
 ReactDOM.render(
   <React.StrictMode>
