@@ -93,7 +93,7 @@ exports.userLogin = (db, email, password) => {
             }else{
                 resolve({
                     flag: false,
-                    message: 'failed'
+                    message: '邮箱或密码错误'
                 })
             }
         });

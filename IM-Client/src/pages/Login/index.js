@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { Navigate  } from "react-router-dom";
-import './index.css'
+import '../../styles/login.css';
 
 export default class Login extends Component  {
     constructor ( props ) {
@@ -21,17 +21,13 @@ export default class Login extends Component  {
                         login: true
                     });
                 }else{
-                    // 登录失败提示
-                    console.log(res.data.data);
-                    console.log(res.data.message);
-                    alert('登录失败o(╥﹏╥)o，请稍后重试！');
+                    message.error(res.data.message);
                 }
             });
     };
     // 提交失败
     onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-        alert("提交错误！");
+        message.error(errorInfo);
     }
     
     render(){
