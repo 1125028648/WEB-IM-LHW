@@ -55,20 +55,35 @@ router.post('/register',async (ctx, next) =>{
 });
 
 router.post('/test',async (ctx, next) => {
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+    
     if(ctx.session.user){
-        ctx.body = 'Your have login.';
+        res.flag = true;
+        res.message = 'Your have login.';
+        ctx.body = res;
     }else{
-        ctx.body = 'Please login before.'
+        ctx.body = res;
     }
 });
 
 router.post('/exit',async (ctx, next) => {
-    await usersMapper.exitUser(db, ctx.session.user.id).then(res => {
-        if(ctx.session.user){
-            ctx.session = null;
+    if(ctx.session.user){
+        await usersMapper.exitUser(db, ctx.session.user.id).then(res => {
+            if(ctx.session.user){
+                ctx.session = null;
+            }
+            ctx.body = res;
+        });
+    }else{
+        var res = {
+            flag: false,
+            message: 'Please login before.'
         }
         ctx.body = res;
-    });
+    }
 });
 
 app.use(router.routes());
