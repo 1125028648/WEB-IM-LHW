@@ -9,13 +9,13 @@ class Test extends Component{
 
     onClick(){
         this.$axios.post('/test').then(res =>{
-            console.log(res);
+            console.log(res.data);
         })
     }
 
     onExit(){
         this.$axios.post('/exit').then(res => {
-            console.log(res);
+            console.log(res.data);
         })
     }
 
