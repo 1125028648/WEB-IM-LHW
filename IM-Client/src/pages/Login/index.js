@@ -80,6 +80,9 @@ export default class Login extends Component  {
                         <Button type="primary" htmlType="submit">
                             登录
                         </Button>
+                        <div>
+                        还没有账号？<a href='/register' >点击创建</a>
+                        </div>
                         </Form.Item>
                     </Form>
                 </div>
