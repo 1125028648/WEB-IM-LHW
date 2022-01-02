@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { Navigate  } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import '../../styles/login.css';
 
 export default class Login extends Component  {
     constructor ( props ) {
         super(props);
         this.state = {
-            login: false
+            login: false,
+            toRegister: false
         }
     }
     // 提交成功
@@ -29,11 +30,22 @@ export default class Login extends Component  {
     onFinishFailed = (errorInfo) => {
         message.error(errorInfo);
     }
+
+    onRegister = () => {
+        this.setState({
+            toRegister: true
+        });
+    }
     
     render(){
         if(this.state.login){
             return <Navigate to='/homePage'/>
         }
+
+        if(this.state.toRegister){
+            return <Navigate to='/register'/>
+        }
+
         return (
             <div className='loginBackground'>
                 <div className='loginFrame'>
@@ -80,9 +92,9 @@ export default class Login extends Component  {
                         <Button type="primary" htmlType="submit">
                             登录
                         </Button>
-                        <div>
-                        还没有账号？<a href='/register' >点击创建</a>
-                        </div>
+                        <Button type='primary' onClick={this.onRegister} className='register'>
+                            注册
+                        </Button>
                         </Form.Item>
                     </Form>
                 </div>

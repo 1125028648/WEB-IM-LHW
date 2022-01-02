@@ -1,31 +1,26 @@
 import React, { Component } from 'react';
-import { Form, Input, Button, message, Radio } from 'antd';
-import { Navigate  } from "react-router-dom";
+import { Form, Input, Button, message } from 'antd';
+import { Navigate, Link } from "react-router-dom";
 import '../../styles/register.css';
 
 export default class Register extends Component  {
     constructor ( props ) {
         super(props);
         this.state = {
-            nickname:"",
-            password:"",
-            confirmpwd:"",
-            email:"",
-            register:false
+            register: false,
         }
     }
 
     // 提交成功
     onFinish = (values) => {
         values.password = this.$md5(values.password);
+        values.confirmpwd = this.$md5(values.confirmpwd);
 
         this.$axios.post("/register", values).then(
             res => {
                 if(res.data.flag === true){
                     this.setState({
-                        nickname:values.nickname,
-                        password:values.password,
-                        email:values.email
+                        register: true
                     });
                 }else{
                     message.error(res.data.message);
@@ -40,7 +35,7 @@ export default class Register extends Component  {
     
     render(){
         if(this.state.register){
-            return <Navigate to='/homePage'/>
+            return <Navigate to='/login'/>
         }
         return (
             <div className='RegisterBackground'>
@@ -129,12 +124,11 @@ export default class Register extends Component  {
                                 span: 16,
                             }}
                     >
-                        <Button type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit" className='buttonRegister'>
                             注册
                         </Button>
-                        <div>
-                        已有账号，<a href='/login' >点击登录</a>
-                        </div>
+
+                        <Link to='/login' className='linkLogin'>back to login</Link>
                         </Form.Item>
                     </Form>
                 </div>

@@ -12,9 +12,7 @@ React.Component.prototype.$axios = axios;
 React.Component.prototype.$md5 = md5;
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App/>
-  </React.StrictMode>, 
+    <App/>, 
   document.getElementById('root')
 );
 
