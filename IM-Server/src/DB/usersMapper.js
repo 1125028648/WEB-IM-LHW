@@ -1,10 +1,10 @@
-exports.queryUser = (db, email, password) =>{
+// 根据用户 id 查询用户信息
+exports.queryUser = (db, userId) =>{
     return new Promise((resolve, reject) => {
-        let sql = `SELECT id, nickname, password, role, email, birthday, 
-        sex FROM users WHERE email = ? and password = ?`;
+        let sql = `SELECT id, nickname, email, birthday, sex, picture FROM users WHERE id = ?`;
 
         db.query(sql,
-        [email, password], function (err, results, fields) {
+        [userId], function (err, results, fields) {
             if(err) {
                 resolve({
                     flag: false,

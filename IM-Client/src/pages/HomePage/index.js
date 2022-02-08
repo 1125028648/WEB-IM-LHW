@@ -4,7 +4,7 @@ export default class HomePage extends Component{
     render(){
         return (
             <div>
-                <p>首页</p>
+                <h1 style={{color: 'red'}}>首页</h1>
             </div>
         )
     }
