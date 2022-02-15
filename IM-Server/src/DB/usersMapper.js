@@ -18,7 +18,7 @@ exports.queryUser = (db, userId) =>{
             resolve({
                 flag: true,
                 message: 'success',
-                data: data
+                data: data[0]
             });
         });
     })
@@ -164,5 +164,61 @@ exports.exitUser = (db, userId) => {
                 message: 'success'
             });
         });
+    })
+}
+
+// 修改用户的 socketId
+exports.updateSocketId = (db, userId, socketId) => {
+    return new Promise((resolve, reject) => {
+        let sql = `UPDATE users_state SET state = 1, socket_id = ? WHERE user_id = ?`;
+
+        db.query(sql, [socketId, userId], function(err, results, fields){
+            if(err) {
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            };
+
+            resolve({
+                flag: true,
+                message: 'success'
+            });
+        });
+    });
+}
+
+// 根据条件查找用户列表
+exports.queryUsersByConditions = (db, condition) =>{
+    return new Promise((resolve, reject) =>{
+        if(condition.email === '' && condition.nickname === ''){
+            resolve({
+                flag: false,
+                message: 'please input condition!',
+            });
+            return;
+        }else{
+            let condition1 = "%" + condition.email + "%";
+            let condition2 = "%" + condition.nickname + "%";
+            let sql = `SELECT id, email, nickname FROM users WHERE email LIKE ? AND nickname LIKE ?`;
+            db.query(sql, [condition1, condition2], function(err, results, fields){
+                if(err){
+                    resolve({
+                        flag: false,
+                        message: 'error'
+                    });
+                    return;
+                }
+
+                var dataString = JSON.stringify(results);
+                var data = JSON.parse(dataString);
+                resolve({
+                    flag: true,
+                    message: 'success',
+                    data: data
+                });
+            });
+        }
     })
 }

@@ -12,6 +12,11 @@ class Test extends Component{
         this.onFriendExamineUpdate = this.onFriendExamineUpdate.bind(this);
         this.onFriendAdd = this.onFriendAdd.bind(this);
         this.onFriendDelete = this.onFriendDelete.bind(this);
+        this.onQueryUser = this.onQueryUser.bind(this);
+
+        this.state = {
+            hello: 'hello'
+        }
     }
 
     onClick(){
@@ -55,7 +60,7 @@ class Test extends Component{
             method: 'get',
             url: '/friends/examine/query',
             params: {
-                userId: 8
+                userId: 1
             }
         }).then(res =>{
             console.log(res.data);
@@ -116,6 +121,27 @@ class Test extends Component{
         })
     }
 
+    // 获取 user
+    onQueryUser(){
+        this.$axios.get('/user').then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 条件查询用户
+    onQueryUsersByCondition= () =>{
+        this.$axios({
+            method: 'get',
+            url: '/users/query/condition',
+            params: {
+                email: '',
+                nickname: '',
+            }
+        }).then(res => {
+            console.log(res.data);
+        })
+    }
+
     render(){
         return (
             <div>
@@ -128,6 +154,8 @@ class Test extends Component{
                 <button onClick={this.onFriendExamineUpdate}>好友审核修改</button>
                 <button onClick={this.onFriendAdd}>好友添加</button>
                 <button onClick={this.onFriendDelete}>好友删除</button>
+                <button onClick={this.onQueryUser}>查看用户信息</button>
+                <button onClick={this.onQueryUsersByCondition}>条件查询用户</button>
             </div>
         )
     }

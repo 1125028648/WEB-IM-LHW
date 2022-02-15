@@ -1,4 +1,9 @@
 const Koa = require('koa');
+const app = new Koa();
+
+const server = require('http').createServer(app.callback());
+const io = require('socket.io')(server, { cors: true });
+
 const Router = require('koa-router');
 const bodypaser = require('koa-bodyparser');
 const mysqlConn = require('./src/DB/mysqlConn');
@@ -7,7 +12,6 @@ const friendMapper = require('./src/DB/friendMapper');
 const session = require('koa-session');
 var cors = require('koa-cors');
 
-const app = new Koa();
 const router = new Router();
 
 // 数据库设置
@@ -27,12 +31,11 @@ app.use(bodypaser());
 app.keys = ['this is my secret']
 app.use(session({
     key: 'koa:sess',
-    maxAge: 60 * 60 * 1000,
+    maxAge: 60 * 60 * 1000 * 24,
     overwrite: true,
     httpOnly: true,
     signed: true,
 },app));
-
 
 // 路由设置
 router.get('/', async (ctx, next) => {
@@ -53,6 +56,20 @@ router.post('/register',async (ctx, next) =>{
     await usersMapper.insertUser(db, ctx.request.body).then(res=>{
         ctx.body = res;
     });
+});
+
+router.get('/user', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        res.flag = true;
+        res.message = 'success';
+        res.data = ctx.session.user;
+    }
+    ctx.body = res;
 });
 
 // 好友列表
@@ -86,6 +103,22 @@ router.get('/friends/query', async (ctx, next) => {
         ctx.body = res;
     }
 });
+
+// 条件查询用户
+router.get('/users/query/condition', async (ctx, next) => {
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await usersMapper.queryUsersByConditions(db, ctx.request.query).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+})
 
 // 查询好友申请记录
 router.get('/friends/examine/query', async (ctx, next) => {
@@ -206,5 +239,19 @@ router.post('/exit',async (ctx, next) => {
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.listen(8000);
-console.log("starting at port 8000 ... ");
+// app.listen(8000);
+io.on('connection', (socket) => {
+    console.log('已连接');
+
+    socket.emit('getSocketId', {
+        socketId: socket.id
+    });
+
+    socket.on('updateSocketId', data => {
+        usersMapper.updateSocketId(db, data.userId, data.socketId);
+    });
+});
+
+server.listen(8000, () => {
+    console.log('starting at port 8000 ... ');
+});

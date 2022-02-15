@@ -25,7 +25,7 @@ exports.queryFriends = (db, userId) =>{
 // 好友审核查询
 exports.queryFriendExamine = (db, userId) => {
     return new Promise((resolve, reject) =>{
-        let sql = `SELECT u.id, u.nickname, u.email, u.picture FROM friend_examine f, users u 
+        let sql = `SELECT u.id, u.nickname, u.email, u.picture, f.id AS exid FROM friend_examine f, users u 
         WHERE f.send_id = u.id AND f.receive_id = ? AND f.state = 0`;
 
         db.query(sql, [userId], function(err, results, fields){
@@ -51,8 +51,9 @@ exports.queryFriendExamine = (db, userId) => {
 // 在好友审核表中添加记录
 exports.addFriendExamine = (db, userId, friendId) =>{
     return new Promise((resolve, reject) =>{
-        let sql = `INSERT INTO friend_examine (send_id, receive_id) VALUES (?,?)`;
-        db.query(sql, [userId, friendId], function(err, results, fields){
+        // 查找是否已经申请过
+        let sql = `SELECT id FROM friend_examine WHERE ((send_id = ? AND receive_id = ?) OR (send_id = ? AND receive_id = ?)) AND state = 0`;
+        db.query(sql, [userId, friendId, friendId, userId], function(err, results, fields){
             if(err){
                 resolve({
                     flag: false,
@@ -61,9 +62,30 @@ exports.addFriendExamine = (db, userId, friendId) =>{
                 return;
             }
 
-            resolve({
-                flag: true,
-                message: 'success'
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+            if(data.length > 0){
+                resolve({
+                    flag: false,
+                    message: 'have sent request or please handle request before',
+                });
+                return;
+            }
+
+            let insertSql = `INSERT INTO friend_examine (send_id, receive_id) VALUES (?,?)`;
+            db.query(insertSql, [userId, friendId], function(err, results, fields){
+                if(err){
+                    resolve({
+                        flag: false,
+                        message: 'error'
+                    });
+                    return;
+                }
+
+                resolve({
+                    flag: true,
+                    message: 'success'
+                });
             });
         });
     });
