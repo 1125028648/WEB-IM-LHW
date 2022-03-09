@@ -8,6 +8,8 @@ import '../../styles/homePage.css';
 import FriendTable from '../../components/friendTable';
 import FriendAddTable from '../../components/friendAddTable';
 import FriendExamineTable from '../../components/friendExamineTable';
+import MyInformation from '../../components/myInformation';
+import MyPassword from '../../components/myPassword';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -95,8 +97,8 @@ export default class HomePage extends Component{
                                 <Menu.Item key="7">好友审核</Menu.Item>
                             </SubMenu>
                             <SubMenu key="sub3" icon={<NotificationOutlined />} title="个人设置">
-                                <Menu.Item key="9">option9</Menu.Item>
-                                <Menu.Item key="10">option10</Menu.Item>
+                                <Menu.Item key="9">个人信息</Menu.Item>
+                                <Menu.Item key="10">密码修改</Menu.Item>
                             </SubMenu>
                         </Menu>
                     </Sider>
@@ -112,6 +114,8 @@ export default class HomePage extends Component{
                             {this.state.menuSelectKey === '5' ? <FriendTable user={this.state.user}/> : null}
                             {this.state.menuSelectKey === '6' ? <FriendAddTable user={this.state.user} /> : null}
                             {this.state.menuSelectKey === '7' ? <FriendExamineTable user={this.state.user}/> : null}
+                            {this.state.menuSelectKey === '9' ? <MyInformation user={this.state.user}/> : null}
+                            {this.state.menuSelectKey === '10'? <MyPassword user={this.state.user}/> : null}
                         </Content>
                     </Layout>
                 </Layout>

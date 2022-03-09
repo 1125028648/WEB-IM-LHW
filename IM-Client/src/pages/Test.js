@@ -142,6 +142,37 @@ class Test extends Component{
         })
     }
 
+    // 个人信息修改
+    onUpdateUserInfo = () =>{
+        this.$axios({
+            method: 'post',
+            url: '/users/update/info',
+            data: {
+                id: 1,
+                nickname: 'root2',
+                birthday: '1997-12-22',
+                sex: 1,
+                picture: '010101.jpeg'
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 修改密码
+    onUpdatePassword = () =>{
+        this.$axios({
+            method: 'post',
+            url: '/users/update/password',
+            data: {
+                userid: 1,
+                password: '123',
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
     render(){
         return (
             <div>
@@ -156,6 +187,8 @@ class Test extends Component{
                 <button onClick={this.onFriendDelete}>好友删除</button>
                 <button onClick={this.onQueryUser}>查看用户信息</button>
                 <button onClick={this.onQueryUsersByCondition}>条件查询用户</button>
+                <button onClick={this.onUpdateUserInfo}>个人信息修改</button>
+                <button onClick={this.onUpdatePassword}>密码修改</button>
             </div>
         )
     }

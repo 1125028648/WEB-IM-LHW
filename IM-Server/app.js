@@ -12,6 +12,8 @@ const friendMapper = require('./src/DB/friendMapper');
 const session = require('koa-session');
 var cors = require('koa-cors');
 
+const multer = require('koa-multer');
+
 const router = new Router();
 
 // 数据库设置
@@ -19,7 +21,8 @@ db = mysqlConn.connect();
 
 //跨域设置
 app.use(async (ctx, next) => {
-    ctx.set("Access-Control-Allow-Credentials", true)
+    ctx.set("Access-Control-Allow-Credentials", true);
+    // ctx.set('Access-Control-Allow-Origin', '*'); 
     await next();
 });
 
@@ -36,6 +39,24 @@ app.use(session({
     httpOnly: true,
     signed: true,
 },app));
+
+// 图片上传
+var storage = multer.diskStorage({
+    // 文件保存路径
+    destination: function(req, file, cb){
+        cb(null, 'src/uploads/')
+    },
+    // 修改文件名称
+    filename: function(req, file, cb){
+        var fileFormat = (file.originalname).split(".");
+        cb(null, Date.now() + "." + fileFormat[fileFormat.length - 1]);
+    }
+})
+
+// 加载配置
+var upload = multer({
+    storage: storage
+});
 
 // 路由设置
 router.get('/', async (ctx, next) => {
@@ -70,6 +91,38 @@ router.get('/user', async (ctx, next) =>{
         res.data = ctx.session.user;
     }
     ctx.body = res;
+});
+
+// 修改个人信息
+router.post('/users/update/info', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await usersMapper.updateUserInfo(db, ctx.request.body).then(res=>{
+            ctx.body = res;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 修改密码
+router.post('/users/update/password', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await usersMapper.updatePassword(db, ctx.request.body.userid, ctx.request.body.password).then(res=>{
+            ctx.body = res;
+        });
+    }else{
+        ctx.body = res;
+    }
 });
 
 // 好友列表
@@ -118,7 +171,7 @@ router.get('/users/query/condition', async (ctx, next) => {
     }else{
         ctx.body = res;
     }
-})
+});
 
 // 查询好友申请记录
 router.get('/friends/examine/query', async (ctx, next) => {
@@ -203,6 +256,13 @@ router.post('/friends/delete', async (ctx, next) => {
     }
 });
 
+// 图片上传
+router.post('/upload', upload.single('avatar'), async(ctx, next) => {
+    ctx.body = {
+        filename: ctx.req.file.filename
+    }
+});
+
 // 测试
 router.post('/test',async (ctx, next) => {
     var res = {
@@ -219,6 +279,8 @@ router.post('/test',async (ctx, next) => {
     }
 });
 
+
+// 登出
 router.post('/exit',async (ctx, next) => {
     if(ctx.session.user){
         await usersMapper.exitUser(db, ctx.session.user.id).then(res => {

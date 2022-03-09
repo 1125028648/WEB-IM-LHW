@@ -5,7 +5,8 @@ exports.connect = ()=>{
         host: '127.0.0.1',
         user: 'root',
         password: '123456',
-        database: 'webim'
+        database: 'webim',
+        timezone: "08:00"
     });
     
     connection.connect(function(err) {

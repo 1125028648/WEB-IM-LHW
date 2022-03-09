@@ -26,7 +26,7 @@ exports.queryUser = (db, userId) =>{
 
 exports.userLogin = (db, email, password) => {
     return new Promise((resolve, reject) => {
-        let sql = `SELECT id, nickname, role, email, birthday, sex FROM users WHERE email = ? and password = ?`;
+        let sql = `SELECT id, nickname, role, email, birthday, sex, picture FROM users WHERE email = ? and password = ?`;
 
         db.query(sql,
         [email, password], function (err, results, fields) {
@@ -220,5 +220,49 @@ exports.queryUsersByConditions = (db, condition) =>{
                 });
             });
         }
+    })
+}
+
+// 修改用户信息
+exports.updateUserInfo = (db, user) =>{
+    return new Promise((resolve, reject) => {
+        let sql = `UPDATE users SET nickname = ?, birthday = ?, sex = ?, picture = ? WHERE id = ?`;
+        
+        db.query(sql, [user.nickname, user.birthday, user.sex, user.picture, user.id], function(err, results, fields){
+            if(err) {
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            };
+
+            resolve({
+                flag: true,
+                message: 'success'
+            });
+        });
+    })
+}
+
+// 修改密码
+exports.updatePassword = (db, userid, password) =>{
+    return new Promise((resolve, reject) =>{
+        let sql = `UPDATE users SET password = ? WHERE id = ?`;
+        
+        db.query(sql, [password, userid], function(err, results, fields){
+            if(err) {
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            };
+
+            resolve({
+                flag: true,
+                message: 'success'
+            });
+        });
     })
 }

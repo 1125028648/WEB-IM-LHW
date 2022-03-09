@@ -133,10 +133,10 @@ export default class FriendAddTable extends Component{
     render(){
         return (
             <div>
-                <div style={{ marginBottom: '20px'}}>
-                    <Input defaultValue={''} placeholder='email' style={{ width: '150px'}} onChange={event => this.handleEmailChange(event)}/>
-                    <Input defaultValue={''} placeholder='nickname' style={{ width: '150px', marginLeft: '20px' }} onChange={event => this.handleNicknameChange(event)}/>
-                    <Button type='primary' onClick={() => {this.onSearch()}} style={{ marginLeft: '20px' }}>Search</Button>
+                <div style={{ marginBottom: 20}}>
+                    <Input defaultValue={''} placeholder='email' style={{ width: 150}} onChange={event => this.handleEmailChange(event)}/>
+                    <Input defaultValue={''} placeholder='nickname' style={{ width: 150, marginLeft: 20 }} onChange={event => this.handleNicknameChange(event)}/>
+                    <Button type='primary' onClick={() => {this.onSearch()}} style={{ marginLeft: 20 }}>Search</Button>
                 </div>
                 
                 <Table columns={this.columns} dataSource={this.state.dataSource}/>
