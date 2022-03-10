@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Avatar } from 'antd';
 import { Navigate } from "react-router-dom";
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
 import '../../styles/homePage.css';
@@ -19,7 +19,14 @@ export default class HomePage extends Component{
     constructor(props){
         super(props);
         this.state = {
-            user: null,
+            user: {
+                id: null,
+                nickname: "",
+                email: "",
+                birthday: "",
+                sex: null,
+                picture: "default.jpeg",
+            },
             menuSelectKey: '',
             isLogin: false,
         }
@@ -66,15 +73,13 @@ export default class HomePage extends Component{
             return <Navigate to='/login'/>
         }
 
+        const fileUrl = "http://localhost:8000/users/images/" + this.state.user.picture;
+        console.log(fileUrl);
+
         return (
             <Layout className='homePage'>
                 <Header className='header'>
-                    <div className='logo' />
-                    <Menu theme='dark' mode='horizontal' defaultSelectedKeys={['1']}>
-                        <Menu.Item key='1'>nav 1</Menu.Item>
-                        <Menu.Item key='2'>nav 2</Menu.Item>
-                        <Menu.Item key='3'>nav 3</Menu.Item>
-                    </Menu>
+                    <Avatar size={40} src={fileUrl} />
                 </Header>
                 <Layout>
                     <Sider width={200} className='site-layout-background'>

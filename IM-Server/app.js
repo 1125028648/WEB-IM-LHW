@@ -14,6 +14,10 @@ var cors = require('koa-cors');
 
 const multer = require('koa-multer');
 
+const fs = require('fs');
+const path = require('path');
+const mime = require('mime-types');
+
 const router = new Router();
 
 // 数据库设置
@@ -123,6 +127,24 @@ router.post('/users/update/password', async (ctx, next) =>{
     }else{
         ctx.body = res;
     }
+});
+
+// 图片请求
+router.get('/users/images/:name', async(ctx, next) =>{
+    let filePath = path.join(__dirname, '/src/uploads/' + ctx.params.name);
+    let file = null;
+    try{
+        // 读取文件
+        file = fs.readFileSync(filePath);
+    }catch(error){
+        // 如果不存在图片，返回默认图片
+        filePath = path.join(__dirname, '/src/uploads/default.jpeg');
+        file = fs.readFileSync(filePath);
+    }
+
+    let mimeType = mime.lookup(filePath);
+    ctx.set('content-type', mimeType);
+    ctx.body = file;
 });
 
 // 好友列表
