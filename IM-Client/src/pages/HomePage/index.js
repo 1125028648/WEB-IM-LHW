@@ -91,10 +91,10 @@ export default class HomePage extends Component{
                         onClick={this.onMenuFunction}
                         >
                             <SubMenu key='sub1' icon={<UserOutlined/>} title='会话管理'>
-                                <Menu.Item key='1'>option1</Menu.Item>
-                                <Menu.Item key='2'>option2</Menu.Item>
-                                <Menu.Item key='3'>option3</Menu.Item>
-                                <Menu.Item key='4'>option4</Menu.Item>
+                                <Menu.Item key='1'>消息窗口1</Menu.Item>
+                                <Menu.Item key='2'>消息窗口2</Menu.Item>
+                                <Menu.Item key='3'>消息窗口3</Menu.Item>
+                                <Menu.Item key='4'>消息窗口4</Menu.Item>
                             </SubMenu>
                             <SubMenu key="sub2" icon={<LaptopOutlined />} title="好友管理">
                                 <Menu.Item key='5'>好友列表</Menu.Item>

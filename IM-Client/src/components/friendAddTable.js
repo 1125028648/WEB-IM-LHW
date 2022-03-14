@@ -19,21 +19,21 @@ export default class FriendAddTable extends Component{
               dataIndex: 'id',
             },
             {
-              title: 'Nickname',
+              title: '昵称',
               dataIndex: 'nickname',
             },
             {
-              title: 'Email',
+              title: '邮箱',
               dataIndex: 'email',
             },
             {
-              title: 'Operation',
+              title: '操作',
               key: 'operation',
               render: (text, record) => {
                   return this.state.dataSource.length >= 1 ? (
                     <div>
-                        <Popconfirm title="Sure to Add?" onConfirm={() => this.handleAdd(record.key)}>
-                            <Button type="link">Add</Button>
+                        <Popconfirm title={`确认添加用户${this.state.dataSource.nickname}为好友？`} onConfirm={() => this.handleAdd(record.key)}>
+                            <Button type="link">添加</Button>
                         </Popconfirm>
                     </div>
                 ) : null;
@@ -134,9 +134,9 @@ export default class FriendAddTable extends Component{
         return (
             <div>
                 <div style={{ marginBottom: 20}}>
-                    <Input defaultValue={''} placeholder='email' style={{ width: 150}} onChange={event => this.handleEmailChange(event)}/>
-                    <Input defaultValue={''} placeholder='nickname' style={{ width: 150, marginLeft: 20 }} onChange={event => this.handleNicknameChange(event)}/>
-                    <Button type='primary' onClick={() => {this.onSearch()}} style={{ marginLeft: 20 }}>Search</Button>
+                    <Input defaultValue={''} placeholder='电子邮箱' style={{ width: 150}} onChange={event => this.handleEmailChange(event)}/>
+                    <Input defaultValue={''} placeholder='昵称' style={{ width: 150, marginLeft: 20 }} onChange={event => this.handleNicknameChange(event)}/>
+                    <Button type='primary' onClick={() => {this.onSearch()}} style={{ marginLeft: 20 }}>查询</Button>
                 </div>
                 
                 <Table columns={this.columns} dataSource={this.state.dataSource}/>

@@ -23,37 +23,37 @@ export default class FriendTable extends Component{
               dataIndex: 'id',
             },
             {
-              title: 'Nickname',
+              title: '昵称',
               dataIndex: 'nickname',
             },
             {
-              title: 'Email',
+              title: '邮箱',
               dataIndex: 'email',
             },
             {
-              title: 'Operation',
+              title: '操作',
               key: 'operation',
               render: (text, record) => {
                   return this.state.dataSource.length >= 1 ? (
                     <div>
-                        <Button type="link" onClick={() => this.showModal(record.key)}>Details</Button>
+                        <Button type="link" onClick={() => this.showModal(record.key)}>信息</Button>
                         <Modal
-                        title="Details" 
+                        title="用户信息" 
                         visible={this.state.isModalVisible}
                         onOk={this.handleOkModal}
                         onCancel={this.handleCancelModal} 
                         footer={[
-                            <Button key="back" onClick={this.handleCancelModal}>Back</Button>
+                            <Button key="back" onClick={this.handleCancelModal}>返回</Button>
                         ]}
                         >
                             <Avatar size="large" icon={<UserOutlined />} />
-                            <p>Nickname: {this.state.modalUser.nickname}</p>
-                            <p>Email: {this.state.modalUser.email}</p>
-                            <p>Sex: {this.state.modalUser.sex}</p>
-                            <p>Birthday: {this.state.modalUser.birthday}</p>
+                            <p>昵称: {this.state.modalUser.nickname}</p>
+                            <p>邮箱: {this.state.modalUser.email}</p>
+                            <p>性别: {this.state.modalUser.sex}</p>
+                            <p>生日: {this.state.modalUser.birthday}</p>
                         </Modal>
-                        <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
-                            <Button type="link" style={{ color: 'red' }}>Delete</Button>
+                        <Popconfirm title={`确认删除好友${this.state.modalUser.nickname}？`} onConfirm={() => this.handleDelete(record.key)}>
+                            <Button type="link" style={{ color: 'red' }}>删除</Button>
                         </Popconfirm>
                     </div>
                 ) : null;

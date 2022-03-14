@@ -128,7 +128,7 @@ export default class Register extends Component  {
                             注册
                         </Button>
 
-                        <Link to='/login' className='linkLogin'>back to login</Link>
+                        <Link to='/login' className='linkLogin'>返回登录</Link>
                         </Form.Item>
                     </Form>
                 </div>

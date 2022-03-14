@@ -119,7 +119,7 @@ export default class MyInformation extends Component{
         const uploadButton = (
             <div>
                 {loading ? <LoadingOutlined /> : <PlusOutlined />}
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <div style={{ marginTop: 8 }}>上传头像</div>
             </div>
         );
 
@@ -136,32 +136,32 @@ export default class MyInformation extends Component{
                 >
                     {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
                 </Upload>
-                <span>Email:</span>
+                <span>邮箱:</span>
                 <Input 
                     value={this.state.userInfo.email} 
                     style={{width: 200, marginLeft: 20, marginRight: 20}} disabled
                 />
-                <span>Nickname:</span>
+                <span>昵称:</span>
                 <Input 
                     value={this.state.userInfo.nickname} 
                     onChange={event => this.handleNicknameChange(event)} 
                     style={{width: 200, marginLeft: 20}}
                 />
                 <br/>
-                <span>Sex:</span>
+                <span>性别:</span>
                 <Select 
                     defaultValue={this.state.userInfo.sex} 
                     key={this.state.userInfo.sex} 
                     onChange={value => this.handleSexChange(value)} 
-                    style={{width: 200, margin: '10px 20px 0px 32px' }}
+                    style={{width: 200, margin: '10px 20px 0px 20px' }}
                 >
                     <Option value={1} key='1'>男</Option>
                     <Option value={0} key='0'>女</Option>
                 </Select>
-                <span>Birthday:</span>
+                <span>生日:</span>
                 <DatePicker 
                     onChange={this.handleBirthdayChange} 
-                    style={{width: 200, marginLeft: 30}} 
+                    style={{width: 200, marginLeft: 20}} 
                     value={
                         this.state.userInfo.birthday === null ? undefined :moment(this.state.userInfo.birthday, dateFormat)
                     } 

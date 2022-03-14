@@ -16,23 +16,23 @@ export default class FriendExamineTable extends Component{
               dataIndex: 'id',
             },
             {
-              title: 'Nickname',
+              title: '昵称',
               dataIndex: 'nickname',
             },
             {
-              title: 'Email',
+              title: '邮箱',
               dataIndex: 'email',
             },
             {
-              title: 'Operation',
+              title: '操作',
               key: 'operation',
               render: (text, record) => {
                   return this.state.dataSource.length >= 1 ? (
                     <div>
-                        <Popconfirm title="Sure to Agree?" onConfirm={() => this.handleAgree(record.key)}>
+                        <Popconfirm title="确认添加好友？" onConfirm={() => this.handleAgree(record.key)}>
                             <Button type="primary">Agree</Button>
                         </Popconfirm>
-                        <Popconfirm title="Sure to Reject?" onConfirm={() => this.handleReject(record.key)}>
+                        <Popconfirm title="拒绝添加好友？" onConfirm={() => this.handleReject(record.key)}>
                             <Button type="primary" style={{ marginLeft: '20px' }} danger>Reject</Button>
                         </Popconfirm>
                     </div>
