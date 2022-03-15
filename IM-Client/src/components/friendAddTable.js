@@ -102,7 +102,6 @@ export default class FriendAddTable extends Component{
                 res.data.data.forEach(element => {
                     element.key = element.id;
                 });
-
                 this.setState({
                     dataSource: res.data.data,
                 });

@@ -68,6 +68,12 @@ export default class HomePage extends Component{
         });
     }
 
+    refreshPage = newUserInfo => {
+        this.setState({
+            user: newUserInfo,
+        })
+    }
+
     render(){
         if(this.state.isLogin){
             return <Navigate to='/login'/>
@@ -119,7 +125,7 @@ export default class HomePage extends Component{
                             {this.state.menuSelectKey === '5' ? <FriendTable user={this.state.user}/> : null}
                             {this.state.menuSelectKey === '6' ? <FriendAddTable user={this.state.user} /> : null}
                             {this.state.menuSelectKey === '7' ? <FriendExamineTable user={this.state.user}/> : null}
-                            {this.state.menuSelectKey === '9' ? <MyInformation user={this.state.user}/> : null}
+                            {this.state.menuSelectKey === '9' ? <MyInformation user={this.state.user} refreshPage={newUserInfo => this.refreshPage(newUserInfo)} /> : null}
                             {this.state.menuSelectKey === '10'? <MyPassword user={this.state.user}/> : null}
                         </Content>
                     </Layout>

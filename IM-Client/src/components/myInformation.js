@@ -46,7 +46,7 @@ export default class MyInformation extends Component{
     }
 
     handleNicknameChange= (event) =>{
-        if(event && event.target && event.target.value){
+        if(event && event.target){
             let data = Object.assign({}, this.state.userInfo, {nickname: event.target.value});
             this.setState({
                 userInfo: data,
@@ -87,23 +87,26 @@ export default class MyInformation extends Component{
         }
     };
 
+    onQuit = () => {
+        this.$axios.post('/exit').then( res => {
+            if(res.data.flag == true){
+                this.setState({
+                    isLogin: true,
+                });
+            }else{
+                message.error(res.data.message);
+            }
+        })
+    }
+
     onSave = () => {
         this.$axios({
             method: 'post',
             url: '/users/update/info',
             data: this.state.userInfo
-        }).then(res =>{
-            if(res.data.flag === true){
-                // 登出
-                this.$axios.post('/exit').then(res => {
-                    if(res.data.flag === true){
-                        this.setState({
-                            isLogin: true,
-                        });
-                    }else{
-                        message.error(res.data.message);
-                    }
-                });
+        }).then(res => {
+            if(res.data.flag) {
+                this.props.refreshPage(this.state.userInfo);
             }else{
                 message.error(res.data.message);
             }
@@ -168,7 +171,8 @@ export default class MyInformation extends Component{
                     format={dateFormat} 
                 />
                 <br/>
-                <Button type='primary' onClick={() => {this.onSave()}} style={{marginLeft: 500, marginTop: 10}}>保存</Button>
+                <Button type='default' onClick={this.onQuit} style={{marginLeft: 350, marginTop: 20, backgroundColor: "gray"}}>退出登录</Button>
+                <Button type='primary' onClick={this.onSave} style={{marginLeft: 20}}>保存</Button>
             </div>
         )
     }

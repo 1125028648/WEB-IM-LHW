@@ -19,7 +19,8 @@ export default class Login extends Component  {
             res => {
                 if(res.data.flag === true){
                     this.setState({
-                        login: true
+                        login: true,
+                        userInfo: res.data,
                     });
                 }else{
                     message.error(res.data.message);
@@ -39,7 +40,7 @@ export default class Login extends Component  {
     
     render(){
         if(this.state.login){
-            return <Navigate to='/homePage'/>
+            return <Navigate to='/homePage' />
         }
 
         if(this.state.toRegister){
@@ -88,7 +89,7 @@ export default class Login extends Component  {
                                 offset: 8,
                                 span: 16,
                             }}
-                    >
+                        >
                         <Button type="primary" htmlType="submit">
                             登录
                         </Button>
