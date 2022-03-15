@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import { Layout, Menu, Avatar } from 'antd';
+import { Layout, Menu, Avatar, Button, message } from 'antd';
 import { Navigate } from "react-router-dom";
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
 import '../../styles/homePage.css';
@@ -74,6 +74,18 @@ export default class HomePage extends Component{
         })
     }
 
+    onQuit = () => {
+        this.$axios.post('/exit').then( res => {
+            if(res.data.flag === true){
+                this.setState({
+                    isLogin: true,
+                });
+            }else{
+                message.error(res.data.message);
+            }
+        })
+    }
+
     render(){
         if(this.state.isLogin){
             return <Navigate to='/login'/>
@@ -86,6 +98,7 @@ export default class HomePage extends Component{
             <Layout className='homePage'>
                 <Header className='header'>
                     <Avatar size={40} src={fileUrl} />
+                    <Button type="primary" style={{ marginLeft: 700}} onClick={this.onQuit} danger>登出</Button>
                 </Header>
                 <Layout>
                     <Sider width={200} className='site-layout-background'>

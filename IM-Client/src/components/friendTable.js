@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Table, Popconfirm, Button, message, Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
 import Modal from 'antd/lib/modal/Modal';
 
 export default class FriendTable extends Component{
@@ -46,7 +45,8 @@ export default class FriendTable extends Component{
                             <Button key="back" onClick={this.handleCancelModal}>返回</Button>
                         ]}
                         >
-                            <Avatar size="large" icon={<UserOutlined />} />
+                            <Avatar src={"http://localhost:8000/users/images/" + this.state.modalUser.picture} size={100} style={{marginBottom: 20}}/>
+                            <br/>
                             <p>昵称: {this.state.modalUser.nickname}</p>
                             <p>邮箱: {this.state.modalUser.email}</p>
                             <p>性别: {this.state.modalUser.sex}</p>
