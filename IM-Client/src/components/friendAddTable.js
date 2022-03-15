@@ -32,7 +32,7 @@ export default class FriendAddTable extends Component{
               render: (text, record) => {
                   return this.state.dataSource.length >= 1 ? (
                     <div>
-                        <Popconfirm title={`确认添加用户${this.state.dataSource.nickname}为好友？`} onConfirm={() => this.handleAdd(record.key)}>
+                        <Popconfirm title={`确认添加用户${record.nickname}为好友？`} okText="确认" cancelText="取消" onConfirm={() => this.handleAdd(record.key)}>
                             <Button type="link">添加</Button>
                         </Popconfirm>
                     </div>
@@ -69,7 +69,7 @@ export default class FriendAddTable extends Component{
                 }
             });
         }else{
-            message.warning('have added before');
+            message.warning('不能重复添加好友');
         }
     }
 

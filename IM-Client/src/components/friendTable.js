@@ -52,7 +52,7 @@ export default class FriendTable extends Component{
                             <p>性别: {this.state.modalUser.sex}</p>
                             <p>生日: {this.state.modalUser.birthday}</p>
                         </Modal>
-                        <Popconfirm title={`确认删除好友${this.state.modalUser.nickname}？`} onConfirm={() => this.handleDelete(record.key)}>
+                        <Popconfirm title={`确认删除好友${this.state.modalUser.nickname}？`} okText="确认" cancelText="取消" onConfirm={() => this.handleDelete(record.key)}>
                             <Button type="link" style={{ color: 'red' }}>删除</Button>
                         </Popconfirm>
                     </div>

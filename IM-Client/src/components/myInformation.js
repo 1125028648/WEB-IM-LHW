@@ -107,6 +107,7 @@ export default class MyInformation extends Component{
         }).then(res => {
             if(res.data.flag) {
                 this.props.refreshPage(this.state.userInfo);
+                message.success("修改成功")
             }else{
                 message.error(res.data.message);
             }
