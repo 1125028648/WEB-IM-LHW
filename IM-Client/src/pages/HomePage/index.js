@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import { Layout, Menu, Avatar, Button, message } from 'antd';
+import { Layout, Menu, Avatar, Button, message, Badge} from 'antd';
 import { Navigate } from "react-router-dom";
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
 import '../../styles/homePage.css';
@@ -29,6 +29,7 @@ export default class HomePage extends Component{
             },
             menuSelectKey: '',
             isLogin: false,
+            unreadMessageCnt: 0,
         }
 
         this.onMenuFunction = this.onMenuFunction.bind(this);
@@ -96,12 +97,16 @@ export default class HomePage extends Component{
 
         return (
             <Layout className='homePage'>
-                <Header className='header'>
+                <Header className='header' style={{padding: '0px 16px'}}>
                     <Avatar size={40} src={fileUrl} />
-                    <Button type="primary" style={{ marginLeft: 700}} onClick={this.onQuit} danger>登出</Button>
+                    <span style={{marginLeft: 15, color: 'white', fontSize: 16}}>{this.state.user.nickname}</span>
+                    <Button type="primary" style={{float: 'right', marginTop: 16}} onClick={this.onQuit} danger>登出</Button>
                 </Header>
                 <Layout>
-                    <Sider width={200} className='site-layout-background'>
+                    <Sider width={180} className='site-layout-background'>
+                        <div style={{position: 'absolute', right: 40, top: 10}}>
+                            {this.state.unreadMessageCnt ? <Badge count={this.state.unreadMessageCnt}/> : null}
+                        </div>
                         <Menu
                         mode='inline'
                         defaultSelectedKeys={['1']}
@@ -109,13 +114,13 @@ export default class HomePage extends Component{
                         style={{ height: '100%', borderRight: 0}}
                         onClick={this.onMenuFunction}
                         >
-                            <SubMenu key='sub1' icon={<UserOutlined/>} title='会话管理'>
+                            <SubMenu key='sub1' icon={<UserOutlined/>} title='消息列表'>
                                 <Menu.Item key='1'>消息窗口1</Menu.Item>
                                 <Menu.Item key='2'>消息窗口2</Menu.Item>
                                 <Menu.Item key='3'>消息窗口3</Menu.Item>
                                 <Menu.Item key='4'>消息窗口4</Menu.Item>
                             </SubMenu>
-                            <SubMenu key="sub2" icon={<LaptopOutlined />} title="好友管理">
+                            <SubMenu key="sub2" icon={<LaptopOutlined />} title="好友列表">
                                 <Menu.Item key='5'>好友列表</Menu.Item>
                                 <Menu.Item key="6">添加好友</Menu.Item>
                                 <Menu.Item key="7">好友审核</Menu.Item>
@@ -123,6 +128,7 @@ export default class HomePage extends Component{
                             <SubMenu key="sub3" icon={<NotificationOutlined />} title="个人设置">
                                 <Menu.Item key="9">个人信息</Menu.Item>
                                 <Menu.Item key="10">密码修改</Menu.Item>
+                                <Menu.Item key="11">系统设置</Menu.Item>
                             </SubMenu>
                         </Menu>
                     </Sider>

@@ -87,18 +87,6 @@ export default class MyInformation extends Component{
         }
     };
 
-    // onQuit = () => {
-    //     this.$axios.post('/exit').then( res => {
-    //         if(res.data.flag === true){
-    //             this.setState({
-    //                 isLogin: true,
-    //             });
-    //         }else{
-    //             message.error(res.data.message);
-    //         }
-    //     })
-    // }
-
     onSave = () => {
         this.$axios({
             method: 'post',
@@ -172,7 +160,6 @@ export default class MyInformation extends Component{
                     format={dateFormat} 
                 />
                 <br/>
-                {/* <Button type='default' onClick={this.onQuit} style={{marginLeft: 350, marginTop: 20, backgroundColor: "gray"}}>退出登录</Button> */}
                 <Button type='primary' onClick={this.onSave} style={{marginLeft: 460, marginTop: 20}}>保存</Button>
             </div>
         )
