@@ -9,6 +9,7 @@ const bodypaser = require('koa-bodyparser');
 const mysqlConn = require('./src/DB/mysqlConn');
 const usersMapper = require('./src/DB/usersMapper');
 const friendMapper = require('./src/DB/friendMapper');
+const roomMapper = require('./src/DB/roomMapper');
 const session = require('koa-session');
 var cors = require('koa-cors');
 
@@ -285,6 +286,22 @@ router.post('/upload', upload.single('avatar'), async(ctx, next) => {
     }
 });
 
+// 查询已加入 room
+router.get('/rooms/query', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await roomMapper.queryRoom(db, ctx.request.query.userId).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
 // 测试
 router.post('/test',async (ctx, next) => {
     var res = {
@@ -324,6 +341,9 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 // app.listen(8000);
+// 单聊
+var hashName = new Array();  // k: socketid v: userid
+
 io.on('connection', (socket) => {
     console.log('已连接');
 
@@ -332,7 +352,27 @@ io.on('connection', (socket) => {
     });
 
     socket.on('updateSocketId', data => {
+        hashName[socket.id] =  data.userId;
         usersMapper.updateSocketId(db, data.userId, data.socketId);
+
+        roomMapper.queryRoom(db, data.userId).then(res =>{
+            if(res.flag){
+                let rooms = res.data;
+                for(let i=0; i<rooms.length; i++){
+                    socket.join(rooms[i].room_id);
+                }
+            }
+        });
+    });
+
+    socket.on('message', function(message){
+        socket.broadcast.to(message.roomId).emit('message', message);
+        roomMapper.receiveMessage(db, message);
+    });
+
+    socket.on('disconnect', function(){
+        console.log('断开一个连接' + hashName[socket.id]);
+        usersMapper.exitUser(db, hashName[socket.id]);
     });
 });
 

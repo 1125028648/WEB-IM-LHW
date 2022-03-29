@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, message, Input, Select, DatePicker, Upload } from 'antd';
 import moment from 'moment';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { Navigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -35,7 +34,6 @@ export default class MyInformation extends Component{
             userInfo: {},
             loading: false,
             responseName: "",
-            isLogin: false,
         }
     }
 
@@ -87,18 +85,6 @@ export default class MyInformation extends Component{
         }
     };
 
-    // onQuit = () => {
-    //     this.$axios.post('/exit').then( res => {
-    //         if(res.data.flag === true){
-    //             this.setState({
-    //                 isLogin: true,
-    //             });
-    //         }else{
-    //             message.error(res.data.message);
-    //         }
-    //     })
-    // }
-
     onSave = () => {
         this.$axios({
             method: 'post',
@@ -115,10 +101,6 @@ export default class MyInformation extends Component{
     }
 
     render(){
-        if(this.state.isLogin){
-            return <Navigate to='/login'/>
-        }
-
         const { loading, imageUrl } = this.state;
         const uploadButton = (
             <div>
@@ -172,7 +154,6 @@ export default class MyInformation extends Component{
                     format={dateFormat} 
                 />
                 <br/>
-                {/* <Button type='default' onClick={this.onQuit} style={{marginLeft: 350, marginTop: 20, backgroundColor: "gray"}}>退出登录</Button> */}
                 <Button type='primary' onClick={this.onSave} style={{marginLeft: 460, marginTop: 20}}>保存</Button>
             </div>
         )
