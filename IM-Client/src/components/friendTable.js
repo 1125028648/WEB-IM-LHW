@@ -18,7 +18,7 @@ export default class FriendTable extends Component{
 
         this.columns = [
             {
-              title: 'Id',
+              title: 'id',
               dataIndex: 'id',
             },
             {
@@ -28,10 +28,13 @@ export default class FriendTable extends Component{
             {
               title: '邮箱',
               dataIndex: 'email',
+              width: '30%',
             },
             {
               title: '操作',
               key: 'operation',
+              width: '40%',
+              
               render: (text, record) => {
                   return this.state.dataSource.length >= 1 ? (
                     <div>
@@ -55,6 +58,7 @@ export default class FriendTable extends Component{
                         <Popconfirm title={`确认删除好友${this.state.modalUser.nickname}？`} okText="确认" cancelText="取消" onConfirm={() => this.handleDelete(record.key)}>
                             <Button type="link" style={{ color: 'red' }}>删除</Button>
                         </Popconfirm>
+                        {record.selected ? <Button type="primary" onClick={this.sendMessage}>发消息</Button> : null}
                     </div>
                 ) : null;
               },
@@ -84,6 +88,10 @@ export default class FriendTable extends Component{
             }
             
         });
+    }
+
+    sendMessage = () => {
+        
     }
 
     handleDelete = (key) => {
@@ -150,7 +158,20 @@ export default class FriendTable extends Component{
 
     render(){
         return (
-            <Table columns={this.columns} dataSource={this.state.dataSource}/>
+            <Table 
+                columns={this.columns} 
+                dataSource={this.state.dataSource}
+                onRow={record => {
+                    return {
+                        onMouseEnter: event => {
+                            record.selected = true;
+                        },
+                        onMouseLeave: event => {
+                            record.selected = false;
+                        }
+                    }
+                }}
+            />
         )
     }
 }

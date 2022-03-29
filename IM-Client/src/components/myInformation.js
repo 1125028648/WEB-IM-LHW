@@ -29,7 +29,7 @@ export default class MyInformation extends Component{
 
     constructor(props){
         super(props);
-        console.log(this.props.user);
+        // console.log(this.props.user);
         this.state = {
             userInfo: {},
             loading: false,

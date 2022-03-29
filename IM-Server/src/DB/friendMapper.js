@@ -67,7 +67,7 @@ exports.addFriendExamine = (db, userId, friendId) =>{
             if(data.length > 0){
                 resolve({
                     flag: false,
-                    message: 'have sent request or please handle request before',
+                    message: 'Have sent or received the request before!',
                 });
                 return;
             }

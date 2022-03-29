@@ -87,7 +87,7 @@ router.post('/register',async (ctx, next) =>{
 router.get('/user', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -102,7 +102,7 @@ router.get('/user', async (ctx, next) =>{
 router.post('/users/update/info', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -118,7 +118,7 @@ router.post('/users/update/info', async (ctx, next) =>{
 router.post('/users/update/password', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -152,7 +152,7 @@ router.get('/users/images/:name', async(ctx, next) =>{
 router.get('/friends/list', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -168,7 +168,7 @@ router.get('/friends/list', async (ctx, next) =>{
 router.get('/friends/query', async (ctx, next) => {
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -184,7 +184,7 @@ router.get('/friends/query', async (ctx, next) => {
 router.get('/users/query/condition', async (ctx, next) => {
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -200,7 +200,7 @@ router.get('/users/query/condition', async (ctx, next) => {
 router.get('/friends/examine/query', async (ctx, next) => {
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -216,7 +216,7 @@ router.get('/friends/examine/query', async (ctx, next) => {
 router.post('/friends/examine/insert', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -233,7 +233,7 @@ router.post('/friends/examine/insert', async (ctx, next) =>{
 router.get('/friends/examine/update', async (ctx, next) => {
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -249,7 +249,7 @@ router.get('/friends/examine/update', async (ctx, next) => {
 router.post('/friends/insert', async (ctx, next) => {
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -266,7 +266,7 @@ router.post('/friends/insert', async (ctx, next) => {
 router.post('/friends/delete', async (ctx, next) => {
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -306,12 +306,12 @@ router.get('/rooms/query', async (ctx, next) =>{
 router.post('/test',async (ctx, next) => {
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
     
     if(ctx.session.user){
         res.flag = true;
-        res.message = 'Your have login.';
+        res.message = 'Your have logged in.';
         ctx.body = res;
     }else{
         ctx.body = res;
@@ -331,7 +331,7 @@ router.post('/exit',async (ctx, next) => {
     }else{
         var res = {
             flag: false,
-            message: 'Please login before.'
+            message: 'Please login first.'
         }
         ctx.body = res;
     }
@@ -345,7 +345,7 @@ app.use(router.allowedMethods());
 var hashName = new Array();  // k: socketid v: userid
 
 io.on('connection', (socket) => {
-    console.log('已连接');
+    console.log("connected");
 
     socket.emit('getSocketId', {
         socketId: socket.id

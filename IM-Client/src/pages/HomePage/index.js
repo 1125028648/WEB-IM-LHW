@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import { Layout, Menu, Avatar, Button, message, Badge} from 'antd';
 import { Navigate } from "react-router-dom";
-import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
+import { UserOutlined, ContactsOutlined, SettingOutlined, MessageOutlined } from '@ant-design/icons';
 import '../../styles/homePage.css';
 
 import FriendTable from '../../components/friendTable';
@@ -10,6 +10,7 @@ import FriendAddTable from '../../components/friendAddTable';
 import FriendExamineTable from '../../components/friendExamineTable';
 import MyInformation from '../../components/myInformation';
 import MyPassword from '../../components/myPassword';
+import { cookies } from 'koa/lib/context';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -33,6 +34,7 @@ export default class HomePage extends Component{
             rooms: [],
             friendList: [],
             unreadMessageCnt: 0,
+            openKeys: ['MessageList'],
         }
 
         this.onMenuFunction = this.onMenuFunction.bind(this);
@@ -190,6 +192,15 @@ export default class HomePage extends Component{
         })
     }
 
+    onOpenChange = keys => {
+        if(keys.length > 1) {
+            keys = [keys[keys.length-1]];
+        }
+        this.setState({
+            openKeys: keys,
+        })
+    }
+
     render(){
         if(this.state.isLogin){
             return <Navigate to='/login'/>
@@ -208,29 +219,35 @@ export default class HomePage extends Component{
                 </Header>
                 <Layout>
                     <Sider width={180} className='site-layout-background'>
+                        {/* 未读消息数显示 */}
                         <div style={{position: 'absolute', right: 40, top: 10}}>
-                            {this.state.unreadMessageCnt ? <Badge count={this.state.unreadMessageCnt}/> : null}
+                            {this.state.unreadMessageCnt ? <Badge count={this.props.unreadMessageCnt}/> : null}
                         </div>
                         <Menu
                         mode='inline'
                         defaultSelectedKeys={['1']}
-                        defaultOpenKeys={['sub1']}
+                        defaultOpenKeys={['MessageList']}
+                        openKeys={this.state.openKeys}
+                        onOpenChange={this.onOpenChange}
                         style={{ height: '100%', borderRight: 0}}
                         onClick={this.onMenuFunction}
                         >
-                            <SubMenu key='sub1' icon={<UserOutlined/>} title='会话管理'>
+                            <SubMenu key='MessageList' icon={<MessageOutlined />} title='消息列表'>
                                 {/* <Menu.Item key='1'>消息窗口1</Menu.Item> */}
                                 {this.state.rooms.map(room => <Menu.Item key={room.room_name}>{room.room_name}</Menu.Item>)}
                             </SubMenu>
-                            <SubMenu key="sub2" icon={<LaptopOutlined />} title="好友列表">
+                            <SubMenu key="FriendsManage" icon={<ContactsOutlined />} title="好友管理">
                                 <Menu.Item key='5'>好友列表</Menu.Item>
                                 <Menu.Item key="6">添加好友</Menu.Item>
                                 <Menu.Item key="7">好友审核</Menu.Item>
                             </SubMenu>
-                            <SubMenu key="sub3" icon={<NotificationOutlined />} title="个人设置">
+                            <SubMenu key="PersonalSettings" icon={<UserOutlined />} title="个人设置">
                                 <Menu.Item key="9">个人信息</Menu.Item>
                                 <Menu.Item key="10">密码修改</Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="SystemSettings" icon={<SettingOutlined />} title="系统选项">
                                 <Menu.Item key="11">系统设置</Menu.Item>
+                                <Menu.Item key="12">系统通知</Menu.Item>
                             </SubMenu>
                         </Menu>
                     </Sider>
