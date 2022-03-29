@@ -168,6 +168,50 @@ export default class HomePage extends Component{
         });
     }
 
+    initialRoom = (userId, friendList) =>{
+        return new Promise((resolve, reject) =>{
+            // 获取房间列表
+            this.$axios({
+                method: 'get',
+                url: '/rooms/query',
+                params: {
+                    userId: userId,
+                }
+            }).then(res =>{
+                let friendMap = [];
+                for(let i = 0; i<friendList.length; i++){
+                    friendMap[friendList[i].id] = friendList[i].nickname;
+                }
+
+                res.data.data.forEach(element => {
+                    if(element.room_name.indexOf('-') !== -1){
+                        var users = element.room_name.split("-");
+                        if(parseInt(users[0]) === userId){
+                            element.room_name = friendMap[parseInt(users[1])];
+                        }else{
+                            element.room_name = friendMap[parseInt(users[0])];
+                        }
+                    }
+                });
+
+                this.setState({
+                    rooms: res.data.data,
+                });
+            });
+
+            resolve();
+        });
+    }
+
+    onMessageTest = ()=>{
+        // 单聊
+        this.state.socket.emit("message", {
+            roomId: 1,
+            text: "hello world",
+            sendId: 1,
+        });
+    }
+
     onMenuFunction(values){
         this.setState({
             menuSelectKey: values.key,
