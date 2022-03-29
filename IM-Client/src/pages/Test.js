@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Button, Input} from 'antd';
 
 class Test extends Component{
     constructor(){
@@ -15,7 +16,8 @@ class Test extends Component{
         this.onQueryUser = this.onQueryUser.bind(this);
 
         this.state = {
-            hello: 'hello'
+            hello: 'hello',
+            message: '',
         }
     }
 
@@ -173,22 +175,31 @@ class Test extends Component{
         })
     }
 
+    handlerChange = (event) =>{
+        if(event && event.target && event.target.value !== ''){
+            this.setState({
+                message: event.target.value,
+            });
+        }
+    }
+
     render(){
         return (
             <div>
-                <button onClick={this.onClick}>点击</button>
-                <button onClick={this.onExit}>退出</button>
-                <button onClick={this.onFriendList}>好友列表</button>
-                <button onClick={this.onFriendQuery}>好友详情查询</button>
-                <button onClick={this.onFriendExamineQuery}>好友审核查询</button>
-                <button onClick={this.onFriendExamineAdd}>好友审核添加</button>
-                <button onClick={this.onFriendExamineUpdate}>好友审核修改</button>
-                <button onClick={this.onFriendAdd}>好友添加</button>
-                <button onClick={this.onFriendDelete}>好友删除</button>
-                <button onClick={this.onQueryUser}>查看用户信息</button>
-                <button onClick={this.onQueryUsersByCondition}>条件查询用户</button>
-                <button onClick={this.onUpdateUserInfo}>个人信息修改</button>
-                <button onClick={this.onUpdatePassword}>密码修改</button>
+                <Button onClick={this.onClick}>点击</Button>
+                <Button onClick={this.onExit}>退出</Button>
+                <Button onClick={this.onFriendList}>好友列表</Button>
+                <Button onClick={this.onFriendQuery}>好友详情查询</Button>
+                <Button onClick={this.onFriendExamineQuery}>好友审核查询</Button>
+                <Button onClick={this.onFriendExamineAdd}>好友审核添加</Button>
+                <Button onClick={this.onFriendExamineUpdate}>好友审核修改</Button>
+                <Button onClick={this.onFriendAdd}>好友添加</Button>
+                <Button onClick={this.onFriendDelete}>好友删除</Button>
+                <Button onClick={this.onQueryUser}>查看用户信息</Button>
+                <Button onClick={this.onQueryUsersByCondition}>条件查询用户</Button>
+                <Button onClick={this.onUpdateUserInfo}>个人信息修改</Button>
+                <Button onClick={this.onUpdatePassword}>密码修改</Button>
+                <Input onChange={event => this.handlerChange(event)} />
             </div>
         )
     }

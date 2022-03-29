@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, message, Input, Select, DatePicker, Upload } from 'antd';
 import moment from 'moment';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { Navigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -35,7 +34,6 @@ export default class MyInformation extends Component{
             userInfo: {},
             loading: false,
             responseName: "",
-            isLogin: false,
         }
     }
 
@@ -103,10 +101,6 @@ export default class MyInformation extends Component{
     }
 
     render(){
-        if(this.state.isLogin){
-            return <Navigate to='/login'/>
-        }
-
         const { loading, imageUrl } = this.state;
         const uploadButton = (
             <div>

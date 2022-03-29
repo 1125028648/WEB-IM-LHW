@@ -136,6 +136,43 @@ exports.addFriend = (db, userId, friendId) =>{
             }
         });
 
+        // 创建房间
+        let sql = `INSERT INTO rooms(room_name, creator_id) VALUES (?, ?)`;
+        let roomName = userId + "-" + friendId;
+        db.query(sql, [roomName, userId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            let roomId = results.insertId;
+            // 加入房间
+            let sql2 = `INSERT INTO room_join (room_id, user_id) VALUES (?, ?)`;
+
+            db.query(sql2, [roomId, userId], function(err, results, fields){
+                if(err){
+                    resolve({
+                        flag: false,
+                        message: 'error'
+                    });
+                    return;
+                }
+            });
+
+            db.query(sql2, [roomId, friendId], function(err, results, fields){
+                if(err){
+                    resolve({
+                        flag: false,
+                        message: 'error'
+                    });
+                    return;
+                }
+            });
+        });
+
         resolve({
             flag: true,
             message: 'success'
@@ -158,6 +195,20 @@ exports.deleteFriend = (db, userId, friendId) => {
         });
 
         db.query(sql, [friendId, userId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+        });
+
+        // 删除房间
+        let roomName1 = userId + "-" + friendId;
+        let roomName2 = friendId + "-" + userId;
+        let sql2 = `DELETE FROM rooms WHERE room_name = ? OR room_name = ?`;
+        db.query(sql2, [roomName1, roomName2], function(err, results, fields){
             if(err){
                 resolve({
                     flag: false,
