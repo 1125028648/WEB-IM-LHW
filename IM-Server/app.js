@@ -345,8 +345,7 @@ app.use(router.allowedMethods());
 var hashName = new Array();  // k: socketid v: userid
 
 io.on('connection', (socket) => {
-    console.log("connected");
-
+    console.log(`connected: ${socket.id}`);
     socket.emit('getSocketId', {
         socketId: socket.id
     });
@@ -358,22 +357,31 @@ io.on('connection', (socket) => {
         roomMapper.queryRoom(db, data.userId).then(res =>{
             if(res.flag){
                 let rooms = res.data;
-                for(let i=0; i<rooms.length; i++){
-                    socket.join(rooms[i].room_id);
+                for(let room of rooms){
+                    socket.join(room.room_id);
                 }
             }
         });
     });
 
-    socket.on('message', function(message){
-        socket.broadcast.to(message.roomId).emit('message', message);
+    socket.on('sendMessage', function(message){
+        socket.to(message.room).emit('newMessage', message);
+        // console.log(message);
         roomMapper.receiveMessage(db, message);
     });
 
     socket.on('disconnect', function(){
-        console.log('断开一个连接' + hashName[socket.id]);
+        console.log('disconnected: ' + hashName[socket.id]);
         usersMapper.exitUser(db, hashName[socket.id]);
     });
+
+    //获取房间里的消息
+    socket.on('queryRoomMessages', roomInfo => {
+        roomMapper.queryRoomMessages(db, roomInfo).then( roomMessages => {
+            socket.emit('updateRoomMessages', roomMessages); //传送房间数据
+        })
+    })
+
 });
 
 server.listen(8000, () => {
