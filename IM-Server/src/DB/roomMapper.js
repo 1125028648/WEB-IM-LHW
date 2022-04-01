@@ -1,5 +1,26 @@
 const { reject } = require("underscore");
 
+//以下代码是为了前端测试瞎写的，大佬您看着改改
+exports.queryRoomMessages = (db, roomInfo) => {
+    return new Promise( (resolve, reject) => {
+        let sql = `SELECT send_id, send_time, message FROM messages WHERE room_id= ?`;
+
+        db.query(sql, [roomInfo.room], function (err, results) {
+            if(err) {
+                return;
+            }
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+
+            resolve({
+                room: roomInfo.room,
+                messages: data,
+            })
+        })
+    })
+}
+
 // 查找用户添加的所有房间
 exports.queryRoom = (db, userId) =>{
     return new Promise((resolve, reject) => {
@@ -32,7 +53,7 @@ exports.receiveMessage = (db, message) =>{
         // 保存消息
         let sql = `INSERT INTO messages (send_id, room_id, send_time, message) VALUES(?, ?, NOW(), ?)`;
         
-        db.query(sql, [message.sendId, message.roomId, message.text], function (err, results, fields) {
+        db.query(sql, [message.sender, message.room, message.content], function (err, results, fields) {
             if(err) {
                 resolve({
                     flag: false,
@@ -45,7 +66,7 @@ exports.receiveMessage = (db, message) =>{
             // 读取情况
             let sql2 = `SELECT us.user_id AS user_id FROM room_join rj, users_state us WHERE rj.room_id = ? AND us.state = 1 AND rj.user_id = us.user_id`;
 
-            db.query(sql2, [message.roomId], function(err, results, fields){
+            db.query(sql2, [message.room], function(err, results, fields){
                 if(err) {
                     resolve({
                         flag: false,
@@ -75,7 +96,7 @@ exports.receiveMessage = (db, message) =>{
 
             let sql4 = `SELECT us.user_id AS user_id FROM room_join rj, users_state us WHERE rj.room_id = ? AND us.state = 0 AND rj.user_id = us.user_id`;
 
-            db.query(sql4, [message.roomId], function(err, results, fields){
+            db.query(sql4, [message.room], function(err, results, fields){
                 if(err) {
                     resolve({
                         flag: false,

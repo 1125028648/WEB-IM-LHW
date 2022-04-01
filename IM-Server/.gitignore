@@ -1,3 +1,6 @@
+mysqlConn.js
+.gitignore
+uploads
 # Logs
 logs
 *.log
