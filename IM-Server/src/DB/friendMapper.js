@@ -67,7 +67,7 @@ exports.addFriendExamine = (db, userId, friendId) =>{
             if(data.length > 0){
                 resolve({
                     flag: false,
-                    message: 'have sent request or please handle request before',
+                    message: '已发送过申请',
                 });
                 return;
             }
@@ -183,18 +183,8 @@ exports.addFriend = (db, userId, friendId) =>{
 // 删除好友
 exports.deleteFriend = (db, userId, friendId) => {
     return new Promise((resolve, reject) =>{
-        let sql = `DELETE FROM friends WHERE user_id = ? AND friend_id = ?`;
-        db.query(sql, [userId, friendId], function(err, results, fields){
-            if(err){
-                resolve({
-                    flag: false,
-                    message: 'error'
-                });
-                return;
-            }
-        });
-
-        db.query(sql, [friendId, userId], function(err, results, fields){
+        let sql = `DELETE FROM friends WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)`;
+        db.query(sql, [userId, friendId, friendId, userId], function(err, results, fields){
             if(err){
                 resolve({
                     flag: false,

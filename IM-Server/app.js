@@ -302,6 +302,172 @@ router.get('/rooms/query', async (ctx, next) =>{
     }
 });
 
+// 查询群列表
+router.get('/rooms/query/list', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await roomMapper.queryRoomList(db, ctx.request.query.userId).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 查询群详情（成员）
+router.get('/rooms/query/member', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await roomMapper.queryRoomMember(db, ctx.request.query.roomId).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 创建群
+router.post('/rooms/create', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        let {userId, roomName} = ctx.request.body;
+        await roomMapper.createRoom(db, userId, roomName).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 模糊查找群
+router.get('/rooms/query/condition', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await roomMapper.queryRoomByName(db, ctx.request.query.roomName).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+})
+
+// 添加申请
+router.post('/rooms/examine/insert', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        let {userId, roomId, creatorId} = ctx.request.body;
+        await roomMapper.addRoomExamine(db, userId, roomId, creatorId).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 查询群审核列表
+router.get('/rooms/examine/query', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await roomMapper.queryRoomExamine(db, ctx.request.query.userId).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 处理群申请-拒绝
+router.post('/rooms/examine/update', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await roomMapper.updateRoomExamine(db, ctx.request.body.exid).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+})
+
+// 处理群申请-同意
+router.post('/rooms/examine/agree', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        let {exid, roomId, sendId} = ctx.request.body;
+        await roomMapper.updateRoomExamine(db, exid);
+        await roomMapper.agreeRoomExamine(db, roomId, sendId).then(response =>{
+            ctx.body = response;
+        })
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 退群
+router.post('/rooms/exit', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        let {roomId, userId} = ctx.request.body;
+        await roomMapper.exitRoom(db, roomId, userId).then(response =>{
+            ctx.body = response;
+        })
+    }else{
+        ctx.body = res;
+    }
+});
+
+// 群主删除群
+router.post('/rooms/delete', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        let {roomId, userId} = ctx.request.body;
+        await roomMapper.deleteRoom(db, userId, roomId).then(response =>{
+            ctx.body = response;
+        })
+    }else{
+        ctx.body = res;
+    }
+});
+
 // 测试
 router.post('/test',async (ctx, next) => {
     var res = {
