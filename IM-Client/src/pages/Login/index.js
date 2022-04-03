@@ -11,6 +11,8 @@ export default class Login extends Component  {
             toRegister: false
         }
     }
+
+    
     // 提交成功
     onFinish = (values) => {
         values.password = this.$md5(values.password);
@@ -27,10 +29,6 @@ export default class Login extends Component  {
                 }
             });
     };
-    // 提交失败
-    onFinishFailed = (err) => {
-        message.error(err);
-    }
 
     onRegister = () => {
         this.setState({
@@ -57,7 +55,6 @@ export default class Login extends Component  {
                         wrapperCol={{span: 16}} 
                         // initialValues={{remember: true,}}
                         onFinish={this.onFinish}
-                        onFinishFailed={this.onFinishFailed}
                         autoComplete="off"
                     >
                         <Form.Item
@@ -66,7 +63,7 @@ export default class Login extends Component  {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your email!',
+                                    message: '请输入邮箱！',
                                 },
                             ]}
                         >
@@ -78,7 +75,7 @@ export default class Login extends Component  {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your password!',
+                                    message: '请输入密码！',
                                 },
                             ]}
                         >

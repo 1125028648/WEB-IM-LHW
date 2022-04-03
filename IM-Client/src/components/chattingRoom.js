@@ -80,7 +80,7 @@ export default class ChattingRoom extends Component {
     render() {
         return (
             <div className='chatting-room'>
-                <div className='chatting-page' id='scroll'>
+                <div className='chatting-page'>
                     {this.state.messages.map((message, index) => 
                         <MessageBubble className="message-bubble" key={index} {...message} socket={this.socket} user={this.user.id} />
                     )}

@@ -3,8 +3,7 @@ exports.queryUser = (db, userId) =>{
     return new Promise((resolve, reject) => {
         let sql = `SELECT id, nickname, email, birthday, sex, picture FROM users WHERE id = ?`;
 
-        db.query(sql,
-        [userId], function (err, results, fields) {
+        db.query(sql, [userId], function (err, results, fields) {
             if(err) {
                 resolve({
                     flag: false,

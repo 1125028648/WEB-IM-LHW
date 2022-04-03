@@ -27,11 +27,6 @@ export default class Register extends Component  {
                 }
             });
     };
-
-    // 提交失败
-    onFinishFailed = (errorInfo) => {
-        message.error(errorInfo);
-    }
     
     render(){
         if(this.state.register){
@@ -46,7 +41,6 @@ export default class Register extends Component  {
                         labelCol = {{span: 8,}} 
                         wrapperCol={{span: 16}} 
                         onFinish={this.onFinish}
-                        onFinishFailed={this.onFinishFailed}
                         autoComplete="off"
                     >
                         <Form.Item

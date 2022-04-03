@@ -18,28 +18,23 @@ const { Header, Content, Sider } = Layout;
 
 export default class HomePage extends Component{
 
-    constructor(props){
-        super(props);
-        this.state = {
-            user: {
-                id: null,
-                nickname: "",
-                email: "",
-                birthday: "",
-                sex: null,
-                picture: "default.jpeg",
-            },
-            menuSelectKey: '',
-            isLogin: false,
-            socket:{},
-            rooms: [],
-            friendList: [],
-            unreadMessageCnt: 0,
-            openKeys: ['MessageList'],
-            selectedRoom: null,
-        }
-
-        // this.onMenuFunction = this.onMenuFunction.bind(this);
+    state = {
+        user: {
+            id: null,
+            nickname: "",
+            email: "",
+            birthday: "",
+            sex: null,
+            picture: "default.jpeg",
+        },
+        menuSelectKey: '',
+        isLogin: false,
+        socket:{},
+        rooms: [],
+        friendList: [],
+        unreadMessageCnt: 0,
+        openKeys: ['MessageList'],
+        selectedRoom: null,
     }
 
     async componentDidMount(){
@@ -80,11 +75,6 @@ export default class HomePage extends Component{
                         socketId: data.socketId
                     });
                 });
-
-                // 聊天功能
-                // socket.on('message', function(message){
-                //     console.log(message);
-                // });
 
                 this.setState({
                     socket: socket,
@@ -169,10 +159,7 @@ export default class HomePage extends Component{
     onMenuFunction = values => {
         this.setState({
             menuSelectKey: values.key,
-            selectedRoom: values.key[0] === 'R' ? values.key.slice(1) : null,
-        });
-        this.setState({
-            selectedRoom: values.key[0] === 'R' ? values.key.slice(1) : null,
+            selectedRoom: this.state.openKeys[0] === 'MessageList' ? values.key : null,
         })
     }
 
@@ -194,12 +181,12 @@ export default class HomePage extends Component{
         })
     }
 
-    onOpenChange = keys => {
-        if(keys.length > 1) {
-            keys = [keys[keys.length-1]];
+    onOpenChange = selectedKeys => {
+        if(selectedKeys.length > 1) {
+            selectedKeys = [selectedKeys[selectedKeys.length-1]];
         }
         this.setState({
-            openKeys: keys,
+            openKeys: selectedKeys,
         })
     }
 
@@ -209,7 +196,6 @@ export default class HomePage extends Component{
         }
 
         const fileUrl = "http://localhost:8000/users/images/" + this.state.user.picture;
-        // console.log(fileUrl);
 
         return (
             <Layout className='homePage'>
@@ -227,7 +213,6 @@ export default class HomePage extends Component{
                         </div>
                         <Menu
                         mode='inline'
-                        defaultSelectedKeys={['1']}
                         defaultOpenKeys={['MessageList']}
                         openKeys={this.state.openKeys}
                         onOpenChange={this.onOpenChange}
@@ -235,8 +220,7 @@ export default class HomePage extends Component{
                         onClick={this.onMenuFunction}
                         >
                             <SubMenu key='MessageList' icon={<MessageOutlined />} title='消息列表'>
-                                {/* <Menu.Item key='1'>消息窗口1</Menu.Item> */}
-                                {this.state.rooms.map(room => <Menu.Item key={`R${room.room_id}`}>{room.room_name}</Menu.Item>)}
+                                {this.state.rooms.map(room => <Menu.Item key={room.room_id}>{room.room_name}</Menu.Item>)}
                             </SubMenu>
                             <SubMenu key="FriendsManage" icon={<ContactsOutlined />} title="好友管理">
                                 <Menu.Item key='friendList'>好友列表</Menu.Item>
@@ -262,7 +246,7 @@ export default class HomePage extends Component{
                             minHeight: 280,
                         }}
                         >
-                            {this.state.selectedRoom ? <ChattingRoom room={this.state.selectedRoom} user={this.state.user} socket={this.state.socket} /> : null }
+                            {this.state.selectedRoom ? <ChattingRoom key={this.state.selectedRoom} room={this.state.selectedRoom} user={this.state.user} socket={this.state.socket} /> : null }
                             {this.state.menuSelectKey === 'friendList' ? <FriendTable user={this.state.user}/> : null}
                             {this.state.menuSelectKey === 'addFriend' ? <FriendAddTable user={this.state.user} /> : null}
                             {this.state.menuSelectKey === 'friendExamine' ? <FriendExamineTable user={this.state.user}/> : null}
