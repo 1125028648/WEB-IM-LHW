@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Button, Input} from 'antd';
+import { Button } from 'antd';
 
 class Test extends Component{
     constructor(){
@@ -175,12 +175,141 @@ class Test extends Component{
         })
     }
 
-    handlerChange = (event) =>{
-        if(event && event.target && event.target.value !== ''){
-            this.setState({
-                message: event.target.value,
-            });
-        }
+    // 查询群列表
+    onQueryRoomList = () =>{
+        this.$axios({
+            method: 'get',
+            url: '/rooms/query/list',
+            params: {
+                userId: 1,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 查询群详情（成员）
+    onQueryRoomMember = () =>{
+        this.$axios({
+            method: 'get',
+            url: '/rooms/query/member',
+            params: {
+                roomId: 5,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 创建群
+    onCreateRoom = () =>{
+        this.$axios({
+            method: 'post',
+            url: '/rooms/create',
+            data: {
+                userId: 1,
+                roomName: '测试群',
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 模糊查询群
+    onQueryRoom = () =>{
+        this.$axios({
+            method: 'get',
+            url: '/rooms/query/condition',
+            params: {
+                roomName: '事业群',
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 添加群申请
+    onInsertRoomExamine = () => {
+        this.$axios({
+            method: 'post',
+            url: '/rooms/examine/insert',
+            data: {
+                userId: 8,
+                roomId: 5,
+                creatorId: 1
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 查询群申请
+    onQueryRoomExamine = () =>{
+        this.$axios({
+            method: 'get',
+            url: '/rooms/examine/query',
+            params: {
+                userId: 1,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 拒绝群申请
+    onUpdateRoomExamine = () =>{
+        this.$axios({
+            method: 'post',
+            url: '/rooms/examine/update',
+            data: {
+                exid: 1,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 群申请-同意
+    onAgreeRoomExamine = () =>{
+        this.$axios({
+            method: 'post',
+            url: '/rooms/examine/agree',
+            data: {
+                exid: 6,
+                roomId: 5,
+                sendId: 8,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 退群
+    onRoomExit = () =>{
+        this.$axios({
+            method: 'post',
+            url: '/rooms/exit',
+            data: {
+                roomId: 5,
+                userId: 1,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
+    // 删除群
+    onDeleteRoom = () =>{
+        this.$axios({
+            method: 'post',
+            url: '/rooms/delete',
+            data: {
+                roomId: 6,
+                userId: 1,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
     }
 
     render(){
@@ -199,7 +328,17 @@ class Test extends Component{
                 <Button onClick={this.onQueryUsersByCondition}>条件查询用户</Button>
                 <Button onClick={this.onUpdateUserInfo}>个人信息修改</Button>
                 <Button onClick={this.onUpdatePassword}>密码修改</Button>
-                <Input onChange={event => this.handlerChange(event)} />
+
+                <Button onClick={this.onQueryRoomList}>查询群列表</Button>
+                <Button onClick={this.onQueryRoomMember}>查询群详情</Button>
+                <Button onClick={this.onCreateRoom}>创建群</Button>
+                <Button onClick={this.onQueryRoom}>条件查询群</Button>
+                <Button onClick={this.onInsertRoomExamine}>添加群申请</Button>
+                <Button onClick={this.onQueryRoomExamine}>查询申请列表</Button>
+                <Button onClick={this.onUpdateRoomExamine}>拒绝群申请</Button>
+                <Button onClick={this.onAgreeRoomExamine}>同意群申请</Button>
+                <Button onClick={this.onRoomExit}>退群</Button>
+                <Button onClick={this.onDeleteRoom}>群主删除群</Button>
             </div>
         )
     }

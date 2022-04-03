@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Input} from 'antd';
+import {Input, message} from 'antd';
 import {SmileOutlined} from '@ant-design/icons';
 import MessageBubble from './messageBubble.js';
 import "../styles/chattingRoom.css";
@@ -36,7 +36,7 @@ export default class ChattingRoom extends Component {
                     this.setState({
                         messages: data.messages,
                     })
-                    resolve('Current room messages updated!');
+                    resolve('Current room messages UPDATED!');
                 }
             })
         })
@@ -44,8 +44,6 @@ export default class ChattingRoom extends Component {
 
     receiveNewMessage = () => {
         this.socket.on("newMessage", newMessage => {
-            console.log("newMessage: ");
-            console.log(newMessage);
             //newMessage: {room: roomid, message: {sender:xx, content:xx}}
             if(newMessage.room === this.room && newMessage.sender !== this.user.id) {
                 this.setState({
@@ -61,14 +59,19 @@ export default class ChattingRoom extends Component {
     }
 
     onSendMessage = (value) => {
-        this.socket.emit('sendMessage', {room: this.room, sender: this.user.id, content: value});
-        this.setState({
-            messages: [...this.state.messages, {sender: this.user.id, content: value}]
-        })
+        if(!value.length) {
+            message.error("输入不能为空！");
+        }
+        else {
+            this.socket.emit('sendMessage', {room: this.room, sender: this.user.id, content: value});
+            this.setState({
+                messages: [...this.state.messages, {sender: this.user.id, content: value}]
+            })
+        }
     }
 
     componentWillUnmount = () => {
-        //防止组件卸载后还在改变state
+        // 防止组件卸载后还在改变state
         this.setState = (state, callback) => {
             return;
         }

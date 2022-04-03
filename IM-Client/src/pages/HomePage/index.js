@@ -169,6 +169,7 @@ export default class HomePage extends Component{
     onMenuFunction = values => {
         this.setState({
             menuSelectKey: values.key,
+            selectedRoom: values.key[0] === 'R' ? values.key.slice(1) : null,
         });
         this.setState({
             selectedRoom: values.key[0] === 'R' ? values.key.slice(1) : null,

@@ -28,8 +28,8 @@ export default class Login extends Component  {
             });
     };
     // 提交失败
-    onFinishFailed = (errorInfo) => {
-        message.error(errorInfo);
+    onFinishFailed = (err) => {
+        message.error(err);
     }
 
     onRegister = () => {

@@ -130,3 +130,329 @@ exports.receiveMessage = (db, message) =>{
         });
     });
 }
+// 查询群
+exports.queryRoomList = (db, userId) => {
+    return new Promise((resolve, reject) =>{
+        let sql = `SELECT r.id AS room_id, r.room_name FROM room_join rj, rooms r 
+        WHERE r.id = rj.room_id AND r.room_name NOT LIKE '%-%' AND rj.user_id = ?`;
+
+        db.query(sql, [userId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+
+            resolve({
+                flag: true,
+                message: 'success',
+                data: data
+            });
+        })
+    })
+}
+
+// 查询群成员
+exports.queryRoomMember = (db, roomId) =>{
+    return new Promise((resolve, reject) =>{
+        let sql = `SELECT u.id, u.nickname, u.email, u.birthday, u.sex, u.picture FROM room_join rj, users u 
+        WHERE rj.user_id = u.id AND rj.id = ?`;
+
+        db.query(sql, [roomId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+
+            resolve({
+                flag: true,
+                message: 'success',
+                data: data
+            });
+        })
+    })
+}
+
+// 创建群
+exports.createRoom = (db, userId, roomName) =>{
+    return new Promise((resolve, reject) => {
+        let sql = `INSERT INTO rooms(room_name, creator_id) VALUES(?, ?)`;
+
+        db.query(sql, [roomName, userId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            let roomId = results.insertId;
+            let sql2 = `INSERT INTO room_join (room_id, user_id) VALUES (?, ?)`;
+
+            db.query(sql2, [roomId, userId], function(err, results, fields){
+                if(err){
+                    resolve({
+                        flag: false,
+                        message: 'error'
+                    });
+                    return;
+                }
+            })
+
+            resolve({
+                flag: true,
+                message: 'success'
+            });
+        });
+    })
+}
+
+// 根据群名模糊查找群
+exports.queryRoomByName = (db, roomName) =>{
+    return new Promise((resolve, reject) =>{
+        let sql = `SELECT r.id AS room_id, r.room_name, creator_id, u.email, u.nickname FROM rooms r, users u 
+        WHERE r.room_name LIKE "%事业群%"  AND r.room_name NOT LIKE '%-%' AND r.creator_id = u.id;`;
+
+        db.query(sql, [roomName], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+
+            resolve({
+                flag: true,
+                message: 'success',
+                data: data,
+            });
+        })
+    })
+}
+
+// 添加审核
+exports.addRoomExamine = (db, userId, roomId, creatorId) => {
+    return new Promise((resolve, reject) =>{
+        // 是否已经在群中
+        let sql = `SELECT id FROM room_join WHERE user_id = ? AND room_id = ?`;
+
+        db.query(sql, [userId, roomId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+
+            if(data.length > 0){
+                resolve({
+                    flag: false,
+                    message: '你已在群中'
+                });
+                return;
+            }
+
+            // 是否已经申请审核
+            let sql1 = `SELECT id FROM room_examine WHERE send_id = ? AND room_id = ? AND state = 0`;
+
+            db.query(sql1, [userId, roomId], function(err, results, fields){
+                if(err){
+                    resolve({
+                        flag: false,
+                        message: 'error'
+                    });
+                    return;
+                }
+                
+                var dataString = JSON.stringify(results);
+                var data = JSON.parse(dataString);
+
+                if(data.length > 0){
+                    resolve({
+                        flag: false,
+                        message: '已发送过申请'
+                    });
+                    return;
+                }
+
+                // 添加申请
+                let sql2 = `INSERT INTO room_examine(send_id, room_id, creator_id, state) VALUES(?, ?, ?, 0)`;
+
+                db.query(sql2, [userId, roomId, creatorId], function(err, results, fields){
+                    if(err){
+                        resolve({
+                            flag: false,
+                            message: 'error'
+                        });
+                        return;
+                    }
+
+                    resolve({
+                        flag: true,
+                        message: 'success'
+                    });
+                });
+            });
+        });
+
+    })
+}
+
+// 查询审核列表
+exports.queryRoomExamine = (db, userId) => {
+    return new Promise((resolve, reject) =>{
+        let sql = `SELECT re.id AS exid, r.id AS room_id, r.room_name, u.nickname, u.email, re.send_id 
+        FROM room_examine re, users u, rooms r 
+        WHERE re.room_id = r.id AND re.send_id = u.id AND re.state = 0 AND re.creator_id = ?`;
+
+        db.query(sql, [userId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+            resolve({
+                flag: true,
+                message: 'success',
+                data: data
+            });
+        })
+    })
+}
+
+
+// 处理审核-拒绝
+exports.updateRoomExamine = (db, exId) => {
+    return new Promise((resolve, reject) => {
+        let exSql = `UPDATE room_examine SET state = 1 WHERE id = ?`;
+        db.query(exSql, [exId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            resolve({
+                flag: true,
+                message: 'success'
+            });
+        });
+    });
+}
+
+// 处理申请-同意
+exports.agreeRoomExamine = (db, roomId, sendId) =>{
+    return new Promise((resolve, reject) =>{
+        let sql = `INSERT INTO room_join (room_id, user_id) VALUES (?, ?)`;
+
+        db.query(sql, [roomId, sendId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            resolve({
+                flag: true,
+                message: 'success'
+            });
+        });
+    })
+}
+
+// 退出群
+exports.exitRoom = (db, roomId, userId) =>{
+    return new Promise((resolve, reject) =>{
+        // 是否是群主
+        let sql = `SELECT id FROM rooms WHERE id = ? AND creator_id = ?`;
+
+        db.query(sql, [roomId, userId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+
+            if(data.length > 0){
+                resolve({
+                    flag: false,
+                    message: '群主不能退群'
+                });
+                return;
+            }
+
+            let sql1 = `DELETE FROM room_join WHERE room_id = ? AND user_id = ?`;
+
+            db.query(sql1, [roomId, userId], function(err, results, fields){
+                if(err){
+                    resolve({
+                        flag: false,
+                        message: 'error'
+                    });
+                    return;
+                }
+
+                resolve({
+                    flag: true,
+                    message: 'success'
+                });
+            })
+        })
+    })
+}
+
+// 删除群
+exports.deleteRoom = (db, userId, roomId) =>{
+    return new Promise((resolve, reject) =>{
+        let sql = `DELETE FROM rooms WHERE id = ? AND creator_id = ?`;
+
+        db.query(sql, [roomId, userId], function(err, results, fields){
+            if(err){
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            }
+
+            resolve({
+                flag: true,
+                message: 'success'
+            });
+        });
+    });
+}
