@@ -10,7 +10,7 @@ export default class MessageBubble extends Component {
     socket = this.props.socket;
 
     state = {
-        path: "http://localhost:8000/users/images/0",
+        path: "",
     }
 
     componentDidMount() {
@@ -23,7 +23,7 @@ export default class MessageBubble extends Component {
         }).then( res => {
             if(res.data.flag === true){
                 this.setState({
-                    path: "http://localhost:8000/users/images/" + res.data.data.picture,
+                    path: this.$imageurl + res.data.data.picture,
                 })
             }
         })

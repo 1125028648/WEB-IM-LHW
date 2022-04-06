@@ -195,7 +195,7 @@ export default class HomePage extends Component{
             return <Navigate to='/login'/>
         }
 
-        const fileUrl = "http://localhost:8000/users/images/" + this.state.user.picture;
+        const fileUrl = this.$imageurl + this.state.user.picture;
 
         return (
             <Layout className='homePage'>

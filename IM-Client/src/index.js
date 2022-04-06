@@ -10,6 +10,7 @@ axios.defaults.baseURL = 'http://localhost:8000';
 axios.defaults.withCredentials = 'true';
 React.Component.prototype.$axios = axios;
 React.Component.prototype.$md5 = md5;
+React.Component.prototype.$imageurl = "http://localhost:8000/users/images/";
 
 ReactDOM.render(
     <App/>, 

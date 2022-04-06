@@ -1,5 +1,3 @@
-const { reject } = require("underscore");
-
 //以下代码是为了前端测试瞎写的，大佬您看着改改
 exports.queryRoomMessages = (db, roomInfo) => {
     return new Promise( (resolve, reject) => {
