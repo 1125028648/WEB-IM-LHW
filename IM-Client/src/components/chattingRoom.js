@@ -29,7 +29,7 @@ export default class ChattingRoom extends Component {
 
     queryRoomMessages = () => {
         return new Promise( (resolve, reject) => {
-            this.socket.emit("queryRoomMessages", {room: this.room});
+            this.socket.emit("queryRoomMessages", {room: this.room, userId: this.user.id});
             this.socket.once("updateRoomMessages", data => { 
                 //data: {room: roomid, messages: []}
                 if(data.room === this.room) {

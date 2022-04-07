@@ -312,6 +312,19 @@ class Test extends Component{
         })
     }
 
+    // 查询每个房间未读消息总数
+    onQueryRoomNoReadCount = () =>{
+        this.$axios({
+            method: 'get',
+            url: '/rooms/noread/count',
+            params:{
+                userId: 8,
+            }
+        }).then(res =>{
+            console.log(res.data);
+        })
+    }
+
     render(){
         return (
             <div>
@@ -339,6 +352,8 @@ class Test extends Component{
                 <Button onClick={this.onAgreeRoomExamine}>同意群申请</Button>
                 <Button onClick={this.onRoomExit}>退群</Button>
                 <Button onClick={this.onDeleteRoom}>群主删除群</Button>
+
+                <Button onClick={this.onQueryRoomNoReadCount}>查询未读记录数</Button>
             </div>
         )
     }

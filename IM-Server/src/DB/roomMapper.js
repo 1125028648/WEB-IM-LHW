@@ -1,9 +1,11 @@
-//以下代码是为了前端测试瞎写的，大佬您看着改改
+// 用户获取所有消息
 exports.queryRoomMessages = (db, roomInfo) => {
     return new Promise( (resolve, reject) => {
-        let sql = `SELECT send_id, send_time, message FROM messages WHERE room_id= ?`;
+        // 查询未读消息
+        let sql = `SELECT mr.id FROM messages m, message_read mr 
+        WHERE mr.message_id = m.id AND receive_id = ? AND m.room_id = ? AND mr.state = 0`;
 
-        db.query(sql, [roomInfo.room], function (err, results) {
+        db.query(sql, [roomInfo.userId, roomInfo.room], function(err, results){
             if(err) {
                 return;
             }
@@ -11,10 +13,60 @@ exports.queryRoomMessages = (db, roomInfo) => {
             var dataString = JSON.stringify(results);
             var data = JSON.parse(dataString);
 
-            resolve({
-                room: roomInfo.room,
-                messages: data,
+            for(let i = 0; i < data.length; i++){
+                // 更新为已读
+                let sql2 = `UPDATE message_read SET state = 1 WHERE id = ?`;
+                db.query(sql2, [data[i].id], function(err, results){
+                    if(err) {
+                        return;
+                    }
+                })
+            }
+
+            // 查询所有消息
+            let sql3 = `SELECT send_id, send_time, message FROM messages WHERE room_id= ?`;
+
+            db.query(sql3, [roomInfo.room], function (err, results) {
+                if(err) {
+                    return;
+                }
+    
+                var dataString = JSON.stringify(results);
+                var data = JSON.parse(dataString);
+    
+                resolve({
+                    room: roomInfo.room,
+                    messages: data,
+                })
             })
+        })
+        
+    })
+}
+
+// 查询每个房间未读消息总数
+exports.queryRoomNoReadCount = (db, userId) =>{
+    return new Promise((resolve, reject)=>{
+        let sql = `SELECT m.room_id, COUNT(*) AS count FROM message_read mr, messages m 
+        WHERE mr.message_id = m.id AND mr.state = 0 AND mr.receive_id = ? GROUP BY m.room_id`;
+
+        db.query(sql, [userId], function(err, results, fields){
+            if(err) {
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            };
+
+            var dataString = JSON.stringify(results);
+            var data = JSON.parse(dataString);
+
+            resolve({
+                flag: true,
+                message: 'success',
+                data: data
+            });
         })
     })
 }
@@ -62,7 +114,8 @@ exports.receiveMessage = (db, message) =>{
 
             let messageId = results.insertId;
             // 读取情况
-            let sql2 = `SELECT us.user_id AS user_id FROM room_join rj, users_state us WHERE rj.room_id = ? AND us.state = 1 AND rj.user_id = us.user_id`;
+            let sql2 = `SELECT us.user_id AS user_id FROM room_join rj, users_state us 
+            WHERE rj.room_id = ? AND us.state = 1 AND rj.user_id = us.user_id`;
 
             db.query(sql2, [message.room], function(err, results, fields){
                 if(err) {
@@ -92,7 +145,8 @@ exports.receiveMessage = (db, message) =>{
             });
 
 
-            let sql4 = `SELECT us.user_id AS user_id FROM room_join rj, users_state us WHERE rj.room_id = ? AND us.state = 0 AND rj.user_id = us.user_id`;
+            let sql4 = `SELECT us.user_id AS user_id FROM room_join rj, users_state us 
+            WHERE rj.room_id = ? AND us.state = 0 AND rj.user_id = us.user_id`;
 
             db.query(sql4, [message.room], function(err, results, fields){
                 if(err) {
@@ -128,6 +182,7 @@ exports.receiveMessage = (db, message) =>{
         });
     });
 }
+
 // 查询群
 exports.queryRoomList = (db, userId) => {
     return new Promise((resolve, reject) =>{
@@ -220,10 +275,11 @@ exports.createRoom = (db, userId, roomName) =>{
 // 根据群名模糊查找群
 exports.queryRoomByName = (db, roomName) =>{
     return new Promise((resolve, reject) =>{
+        let condition = "%" + roomName + "%";
         let sql = `SELECT r.id AS room_id, r.room_name, creator_id, u.email, u.nickname FROM rooms r, users u 
-        WHERE r.room_name LIKE "%事业群%"  AND r.room_name NOT LIKE '%-%' AND r.creator_id = u.id;`;
+        WHERE r.room_name LIKE ?  AND r.room_name NOT LIKE '%-%' AND r.creator_id = u.id`;
 
-        db.query(sql, [roomName], function(err, results, fields){
+        db.query(sql, [condition], function(err, results, fields){
             if(err){
                 resolve({
                     flag: false,

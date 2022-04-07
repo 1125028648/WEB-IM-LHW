@@ -48,7 +48,7 @@ export default class FriendTable extends Component{
                             <Button key="back" onClick={this.handleCancelModal}>返回</Button>
                         ]}
                         >
-                            <Avatar src={"http://localhost:8000/users/images/" + this.state.modalUser.picture} size={100} style={{marginBottom: 20}}/>
+                            <Avatar src={this.$imageurl + this.state.modalUser.picture} size={100} style={{marginBottom: 20}}/>
                             <br/>
                             <p>昵称: {this.state.modalUser.nickname}</p>
                             <p>邮箱: {this.state.modalUser.email}</p>

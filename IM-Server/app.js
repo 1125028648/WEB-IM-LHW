@@ -468,6 +468,22 @@ router.post('/rooms/delete', async (ctx, next) =>{
     }
 });
 
+// 查询用户未读消息数
+router.get('/rooms/noread/count', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login before.'
+    }
+
+    if(ctx.session.user){
+        await roomMapper.queryRoomNoReadCount(db, ctx.request.query.userId).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+})
+
 // 测试
 router.post('/test',async (ctx, next) => {
     var res = {
@@ -507,8 +523,8 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 // app.listen(8000);
-// 单聊
 var hashName = new Array();  // k: socketid v: userid
+// var currRoom = new Array();  // k: userid v: roomid
 
 io.on('connection', (socket) => {
     socket.emit('getSocketId', {
@@ -518,6 +534,7 @@ io.on('connection', (socket) => {
     socket.on('updateSocketId', data => {
         console.log(`connect: ${data.userId}`);
         hashName[socket.id] =  data.userId;
+        // currRoom[data.userId] = -1;
         usersMapper.updateSocketId(db, data.userId, data.socketId);
 
         //获取用户加入的房间数据
