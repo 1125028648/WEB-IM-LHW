@@ -29,16 +29,18 @@ export default class HomePage extends Component{
         },
         menuSelectKey: '',
         isLogin: false,
-        socket:{},
+        socket: null,
         rooms: [],
         friendList: [],
-        unreadMessageCnt: 0,
-        openKeys: ['MessageList'],
+        totalUnreadMessageCnt: 0,
+        unreadMessageCnt: {},
+        roomNewMessages: {},
+        openKeys: [],
         selectedRoom: null,
+        storage: window.sessionStorage,
     }
-
+    
     async componentDidMount(){
-
         let userId, friendList;
         await this.initUser().then(res =>{
             userId = res.userId;
@@ -47,6 +49,33 @@ export default class HomePage extends Component{
             friendList = res.friendList;
         });
         await this.initRoom(userId, friendList);
+
+        const {socket}  = this.state;
+        socket.emit('queryRoomsUnreadCount', this.state.user.id);
+        socket.on('updateRoomsUnreadCount', res => {
+            if(!res.flag) {
+                message.error(res.message);
+            }else{
+                this.showUnreadMessageCnt(res.data).then( () => {
+                    this.receiveNewMessage();
+                })
+            }
+        })
+    }
+
+    showUnreadMessageCnt = data => {
+        return new Promise( (resolve) => {
+            const {unreadMessageCnt, totalUnreadMessageCnt} = this.state;
+            // console.log(data);
+            data.forEach( roomdata => {
+                this.setState( {
+                    unreadMessageCnt: Object.assign(unreadMessageCnt, {[roomdata.room_id] : [roomdata.count]}),
+                    totalUnreadMessageCnt: totalUnreadMessageCnt + roomdata.count,
+                })
+                return 0;
+            })
+            resolve();
+        })
     }
 
     initUser = () =>{
@@ -64,25 +93,22 @@ export default class HomePage extends Component{
                     });
                     return;
                 }
-                
 
                 // 连接服务器 socket 服务
                 const socket = io('ws://localhost:8000');
 
-                socket.on('getSocketId', data => {
-                    socket.emit('updateSocketId', {
+                socket.on('connect', () => {
+                    socket.emit('updateUserId', res.data.data.id);
+    
+                    this.setState({
+                        socket: socket,
+                    })
+    
+                    resolve({
                         userId: res.data.data.id,
-                        socketId: data.socketId
                     });
-                });
-
-                this.setState({
-                    socket: socket,
                 })
-
-                resolve({
-                    userId: res.data.data.id,
-                });
+                
             });
             
         })
@@ -146,6 +172,21 @@ export default class HomePage extends Component{
             resolve();
         });
     }
+    
+    //显示新消息数
+    receiveNewMessage = () => {
+        this.state.socket.on("newMessage", newMessage => {
+            //newMessage: {room: roomid, message: {sender:xx, content:xx}}
+            if(newMessage.sender !== this.state.user.id && newMessage.room !== this.state.selectedRoom) {
+                const {unreadMessageCnt, totalUnreadMessageCnt} = this.state;
+                const unreadcnt = unreadMessageCnt[newMessage.room] || 0;
+                this.setState({
+                    unreadMessageCnt: Object.assign(unreadMessageCnt, {[newMessage.room] : unreadcnt+1}),
+                    totalUnreadMessageCnt: totalUnreadMessageCnt + 1,
+                })
+            }
+        }) 
+    }
 
     onMessageTest = ()=>{
         // 单聊
@@ -156,11 +197,25 @@ export default class HomePage extends Component{
         });
     }
 
-    onMenuFunction = values => {
+    onClickFunction = values => {
         this.setState({
             menuSelectKey: values.key,
-            selectedRoom: this.state.openKeys[0] === 'MessageList' ? values.key : null,
         })
+        //记录当前打开的消息窗口
+        if(this.state.openKeys[0] === 'MessageList') {
+            const {unreadMessageCnt, totalUnreadMessageCnt} = this.state;
+            let cnt = unreadMessageCnt[values.key] || 0;
+            this.setState({
+                //取消当前窗口的未读消息数显示
+                unreadMessageCnt: Object.assign(unreadMessageCnt, {[values.key] : 0}),
+                totalUnreadMessageCnt: totalUnreadMessageCnt - cnt,
+                selectedRoom: values.key,
+            })
+        }else {
+            this.setState( {
+                selectedRoom: null,
+            })
+        }
     }
 
     refreshPage = newUserInfo => {
@@ -179,7 +234,7 @@ export default class HomePage extends Component{
                 message.error(res.data.message);
             }
         })
-    }
+    }    
 
     onOpenChange = selectedKeys => {
         if(selectedKeys.length > 1) {
@@ -188,6 +243,13 @@ export default class HomePage extends Component{
         this.setState({
             openKeys: selectedKeys,
         })
+    }
+
+
+    componentWillUnmount = () => {
+        this.setState = (state, callback) => {
+            return;
+        }
     }
 
     render(){
@@ -206,21 +268,28 @@ export default class HomePage extends Component{
                     <Button type="primary" style={{float: 'right', marginTop: 16}} onClick={this.onQuit} danger>登出</Button>
                 </Header>
                 <Layout>
-                    <Sider width={180} className='site-layout-background'>
+                    <Sider width={170} className='site-layout-background'>
                         {/* 未读消息数显示 */}
-                        <div style={{position: 'absolute', right: 40, top: 10}}>
-                            {this.state.unreadMessageCnt ? <Badge count={this.props.unreadMessageCnt}/> : null}
+                        <div style={{position: 'absolute', right: 35, top: 11}}>
+                            <Badge count={this.state.totalUnreadMessageCnt} size='small' />
                         </div>
                         <Menu
                         mode='inline'
-                        defaultOpenKeys={['MessageList']}
                         openKeys={this.state.openKeys}
                         onOpenChange={this.onOpenChange}
                         style={{ height: '100%', borderRight: 0}}
-                        onClick={this.onMenuFunction}
+                        onClick={this.onClickFunction}
                         >
                             <SubMenu key='MessageList' icon={<MessageOutlined />} title='消息列表'>
-                                {this.state.rooms.map(room => <Menu.Item key={room.room_id}>{room.room_name}</Menu.Item>)}
+                                {this.state.rooms.map((room) => (
+                                        <Menu.Item key={room.room_id}>
+                                            <div key='0' style={{position: 'absolute', right: 40, bottom: 1}}>
+                                                <Badge count={this.state.unreadMessageCnt[room.room_id] || 0} size='small'/>
+                                            </div>
+                                            {room.room_name}
+                                        </Menu.Item>
+                                    )
+                                )}
                             </SubMenu>
                             <SubMenu key="FriendsManage" icon={<ContactsOutlined />} title="好友管理">
                                 <Menu.Item key='friendList'>好友列表</Menu.Item>

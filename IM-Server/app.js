@@ -527,18 +527,14 @@ var hashName = new Array();  // k: socketid v: userid
 // var currRoom = new Array();  // k: userid v: roomid
 
 io.on('connection', (socket) => {
-    socket.emit('getSocketId', {
-        socketId: socket.id
-    });
-
-    socket.on('updateSocketId', data => {
-        console.log(`connect: ${data.userId}`);
-        hashName[socket.id] =  data.userId;
+    socket.on('updateUserId', userId => {
+        console.log(`connect: ${userId}`);
+        hashName[socket.id] =  userId;
         // currRoom[data.userId] = -1;
-        usersMapper.updateSocketId(db, data.userId, data.socketId);
+        usersMapper.updateSocketId(db, userId, socket.id);
 
         //获取用户加入的房间数据
-        roomMapper.queryRoom(db, data.userId).then(res =>{
+        roomMapper.queryRoom(db, userId).then(res =>{
             if(res.flag){
                 let rooms = res.data;
                 for(let room of rooms){
@@ -553,7 +549,14 @@ io.on('connection', (socket) => {
                 //获取房间里的消息
                 socket.on('queryRoomMessages', roomInfo => {
                     roomMapper.queryRoomMessages(db, roomInfo).then( roomMessages => {
-                        io.to(socket.id).emit('updateRoomMessages', roomMessages); //传送房间数据
+                        socket.emit('updateRoomMessages', roomMessages); //传送房间数据
+                    })
+                })
+
+                //获取所有房间未读消息数
+                socket.on('queryRoomsUnreadCount', userId => {
+                    roomMapper.queryRoomNoReadCount(db, userId).then( res => {
+                        socket.emit('updateRoomsUnreadCount', res);
                     })
                 })
             }

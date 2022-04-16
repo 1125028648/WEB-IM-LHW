@@ -4,7 +4,6 @@ exports.connect = ()=>{
     var connection = mysql.createConnection({
         host: '127.0.0.1',
         user: 'root',
-        // password: '214838',
         password: '123456',
         database: 'webim',
         timezone: "08:00"

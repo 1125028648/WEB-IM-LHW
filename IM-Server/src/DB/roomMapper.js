@@ -103,7 +103,7 @@ exports.receiveMessage = (db, message) =>{
         // 保存消息
         let sql = `INSERT INTO messages (send_id, room_id, send_time, message) VALUES(?, ?, NOW(), ?)`;
         
-        db.query(sql, [message.sender, message.room, message.content], function (err, results, fields) {
+        db.query(sql, [message.send_id, message.room, message.content], function (err, results, fields) {
             if(err) {
                 resolve({
                     flag: false,
@@ -214,7 +214,7 @@ exports.queryRoomList = (db, userId) => {
 exports.queryRoomMember = (db, roomId) =>{
     return new Promise((resolve, reject) =>{
         let sql = `SELECT u.id, u.nickname, u.email, u.birthday, u.sex, u.picture FROM room_join rj, users u 
-        WHERE rj.user_id = u.id AND rj.id = ?`;
+        WHERE rj.user_id = u.id AND rj.room_id = ?`;
 
         db.query(sql, [roomId], function(err, results, fields){
             if(err){
