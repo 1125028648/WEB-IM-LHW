@@ -10,6 +10,7 @@ const mysqlConn = require('./src/DB/mysqlConn');
 const usersMapper = require('./src/DB/usersMapper');
 const friendMapper = require('./src/DB/friendMapper');
 const roomMapper = require('./src/DB/roomMapper');
+const emoMapper = require('./src/DB/emoMapper');
 const session = require('koa-session');
 var cors = require('koa-cors');
 
@@ -56,11 +57,28 @@ var storage = multer.diskStorage({
         var fileFormat = (file.originalname).split(".");
         cb(null, Date.now() + "." + fileFormat[fileFormat.length - 1]);
     }
-})
+});
 
 // 加载配置
 var upload = multer({
     storage: storage
+});
+
+// 表情包上传
+var storageEmo = multer.diskStorage({
+    // 文件保存路径
+    destination: function(req, file, cb){
+        cb(null, 'src/emo/')
+    },
+    // 修改文件名称
+    filename: function(req, file, cb){
+        var fileFormat = (file.originalname).split(".");
+        cb(null, Date.now() + "." + fileFormat[fileFormat.length - 1]);
+    }
+});
+
+var uploadEmo = multer({
+    storage: storageEmo
 });
 
 // 路由设置
@@ -140,6 +158,24 @@ router.get('/users/images/:name', async(ctx, next) =>{
     }catch(error){
         // 如果不存在图片，返回默认图片
         filePath = path.join(__dirname, '/src/uploads/default.jpeg');
+        file = fs.readFileSync(filePath);
+    }
+
+    let mimeType = mime.lookup(filePath);
+    ctx.set('content-type', mimeType);
+    ctx.body = file;
+});
+
+// 表情包请求
+router.get('/users/emo/:name', async(ctx, next) =>{
+    let filePath = path.join(__dirname, '/src/emo/' + ctx.params.name);
+    let file = null;
+    try{
+        // 读取文件
+        file = fs.readFileSync(filePath);
+    }catch(error){
+        // 如果不存在图片，返回默认图片
+        filePath = path.join(__dirname, '/src/emo/default.jpeg');
         file = fs.readFileSync(filePath);
     }
 
@@ -286,11 +322,41 @@ router.post('/upload', upload.single('avatar'), async(ctx, next) => {
     }
 });
 
+// 上传表情包并保存记录
+router.post('/uploadEmo', uploadEmo.single('avatar'), async(ctx, next) =>{
+
+    let {id} = ctx.session.user;
+
+    await emoMapper.addEmo(db, id, ctx.req.file.filename).then(res =>{
+        ctx.body = {
+            filename: ctx.req.file.filename,
+            flag: true,
+            message: 'success',
+        }
+    });
+});
+
+// 表情包查询
+router.get('/query/emo', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login first.'
+    }
+
+    if(ctx.session.user){
+        await emoMapper.queryEmo(db, ctx.request.query.userId).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    }
+});
+
 // 查询已加入 room
 router.get('/rooms/query', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -306,7 +372,7 @@ router.get('/rooms/query', async (ctx, next) =>{
 router.get('/rooms/query/list', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -322,7 +388,7 @@ router.get('/rooms/query/list', async (ctx, next) =>{
 router.get('/rooms/query/member', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -338,7 +404,7 @@ router.get('/rooms/query/member', async (ctx, next) =>{
 router.post('/rooms/create', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -355,7 +421,7 @@ router.post('/rooms/create', async (ctx, next) =>{
 router.get('/rooms/query/condition', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -371,7 +437,7 @@ router.get('/rooms/query/condition', async (ctx, next) =>{
 router.post('/rooms/examine/insert', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -388,7 +454,7 @@ router.post('/rooms/examine/insert', async (ctx, next) =>{
 router.get('/rooms/examine/query', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -404,7 +470,7 @@ router.get('/rooms/examine/query', async (ctx, next) =>{
 router.post('/rooms/examine/update', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -420,7 +486,7 @@ router.post('/rooms/examine/update', async (ctx, next) =>{
 router.post('/rooms/examine/agree', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -438,7 +504,7 @@ router.post('/rooms/examine/agree', async (ctx, next) =>{
 router.post('/rooms/exit', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -455,7 +521,7 @@ router.post('/rooms/exit', async (ctx, next) =>{
 router.post('/rooms/delete', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){
@@ -472,7 +538,7 @@ router.post('/rooms/delete', async (ctx, next) =>{
 router.get('/rooms/noread/count', async (ctx, next) =>{
     var res = {
         flag: false,
-        message: 'Please login before.'
+        message: 'Please login first.'
     }
 
     if(ctx.session.user){

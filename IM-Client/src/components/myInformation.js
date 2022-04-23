@@ -116,9 +116,10 @@ export default class MyInformation extends Component{
                     listType="picture-card"
                     className="avatar-uploader"
                     showUploadList={false}
-                    action='http://localhost:8000/upload'
+                    action={this.$upload}
                     beforeUpload={beforeUpload}
                     onChange={this.handleChange}
+                    withCredentials={true}
                 >
                     {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
                 </Upload>
