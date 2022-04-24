@@ -66,10 +66,9 @@ export default class HomePage extends Component{
     showUnreadMessageCnt = data => {
         return new Promise( (resolve) => {
             const {unreadMessageCnt, totalUnreadMessageCnt} = this.state;
-            // console.log(data);
             data.forEach( roomdata => {
                 this.setState( {
-                    unreadMessageCnt: Object.assign(unreadMessageCnt, {[roomdata.room_id] : [roomdata.count]}),
+                    unreadMessageCnt: Object.assign(unreadMessageCnt, {[roomdata.room_id] : roomdata.count}),
                     totalUnreadMessageCnt: totalUnreadMessageCnt + roomdata.count,
                 })
                 return 0;
@@ -80,7 +79,6 @@ export default class HomePage extends Component{
 
     initUser = () =>{
         return new Promise((resolve, reject) =>{
-
             // 获取用户信息
             this.$axios.get('/user').then(res =>{
                 if(res.data.flag){
@@ -180,11 +178,17 @@ export default class HomePage extends Component{
             if(newMessage.sender !== this.state.user.id && newMessage.room !== this.state.selectedRoom) {
                 const {unreadMessageCnt, totalUnreadMessageCnt} = this.state;
                 const unreadcnt = unreadMessageCnt[newMessage.room] || 0;
+                // console.log(`unread: ${unreadcnt}`)
                 this.setState({
                     unreadMessageCnt: Object.assign(unreadMessageCnt, {[newMessage.room] : unreadcnt+1}),
                     totalUnreadMessageCnt: totalUnreadMessageCnt + 1,
                 })
             }
+            this.setState( {
+                rooms: this.state.rooms.sort((frontroom, backroom) => 
+                    this.state.unreadMessageCnt[backroom.room_id] - this.state.unreadMessageCnt[frontroom.room_id]
+                    ),
+            })
         }) 
     }
 
@@ -261,7 +265,7 @@ export default class HomePage extends Component{
 
         return (
             <Layout className='homePage'>
-                <Header className='header' style={{padding: '0px 16px'}}>
+                <Header className='header' >
                     <Avatar size={40} src={fileUrl} />
                     <Button style={{display: "none"}} type="primary" onClick={this.onMessageTest} danger>测试</Button>
                     <span style={{marginLeft: 15, color: 'white', fontSize: 16}}>{this.state.user.nickname}</span>
@@ -314,7 +318,8 @@ export default class HomePage extends Component{
                             margin: 0,
                             minHeight: 280,
                         }}
-                        >
+                        >  
+                            {!this.state.menuSelectKey.length ? <iframe src={'http://spielzeugz.de/html5/liquid-particles-3D/'} height={390} width={600}/> : null}
                             {this.state.selectedRoom ? <ChattingRoom key={this.state.selectedRoom} room={this.state.selectedRoom} user={this.state.user} socket={this.state.socket} /> : null }
                             {this.state.menuSelectKey === 'friendList' ? <FriendTable user={this.state.user}/> : null}
                             {this.state.menuSelectKey === 'addFriend' ? <FriendAddTable user={this.state.user} /> : null}

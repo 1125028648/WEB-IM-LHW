@@ -48,17 +48,17 @@ export default class Login extends Component  {
         return (
             <div className='loginBackground'>
                 <div className='loginFrame'>
-                    <h1 style={{textAlign: "center",fontWeight: 'bolder', color: "#1890ff"}}>系统登录</h1>
+                    <h1 style={{textAlign: "center",fontWeight: 'bolder', color: "#1890ff"}}>用户登录</h1>
                     <Form
                         name='login' 
-                        labelCol = {{span: 8,}} 
-                        wrapperCol={{span: 16}} 
+                        labelCol = {{span: 7}} 
+                        wrapperCol={{span: 12}} 
                         // initialValues={{remember: true,}}
                         onFinish={this.onFinish}
                         autoComplete="off"
                     >
                         <Form.Item
-                            label="电子邮箱"
+                            label="邮箱"
                             name="email"
                             rules={[
                                 {

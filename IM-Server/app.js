@@ -126,6 +126,7 @@ router.post('/users/update/info', async (ctx, next) =>{
     if(ctx.session.user){
         await usersMapper.updateUserInfo(db, ctx.request.body).then(res=>{
             ctx.body = res;
+            ctx.session.user = ctx.request.body;
         });
     }else{
         ctx.body = res;

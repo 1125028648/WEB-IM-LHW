@@ -1,23 +1,19 @@
 .loginBackground {
-    position: absolute;
-    height: 310px;
-    width: 500px;
+    display: flex;
+    align-items: center;
+    height: 280px;
+    width: 400px;
     margin: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background:#ffffff66;
-    padding: 25px 50px;
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 20px;
 }
 
-.input {
-    width: 200px;
-}
 .loginFrame {
-    width: 400px;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
 }
 
 .register {
-    margin-left: 50px;
+    margin-left: 40px;
 }

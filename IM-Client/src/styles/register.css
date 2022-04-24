@@ -1,29 +1,28 @@
 .RegisterBackground {
-    position: absolute;
+    display: flex;
+    align-items: center;
     height: 380px;
-    width: 500px;
-    margin: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background:rgba(255, 255, 255, 0.4);
-    padding: 25px 50px;
-}
-
-a{color: blue;}
-
-.input {
-    width: 200px;
-}
-.RegisterFrame {
     width: 400px;
+    margin: auto;
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 20px;
+}
+
+.RegisterFrame {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
 }
 
 .linkLogin {
-    margin-left: 50px;
+    margin-left: 30px;
+    color: white;
+}
+
+.linkLogin:hover {
+    color: #1890ff;
 }
 
 .buttonRegister {
-    margin-left: 70px;
+    margin-left: 40px;
 }

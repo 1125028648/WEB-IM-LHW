@@ -8,6 +8,7 @@ export default class Register extends Component  {
         super(props);
         this.state = {
             register: false,
+            toLogin: false,
         }
     }
 
@@ -27,9 +28,15 @@ export default class Register extends Component  {
                 }
             });
     };
+
+    onLogin = () => {
+        this.setState( {
+            toLogin: true,
+        })
+    }
     
     render(){
-        if(this.state.register){
+        if(this.state.register || this.state.toLogin){
             return <Navigate to='/login'/>
         }
         return (
@@ -38,13 +45,13 @@ export default class Register extends Component  {
                     <h1 style={{textAlign: "center",fontWeight: 'bolder', color: "#1890ff"}}>用户注册</h1>
                     <Form
                         name='register' 
-                        labelCol = {{span: 8,}} 
-                        wrapperCol={{span: 16}} 
+                        labelCol = {{span: 7}} 
+                        wrapperCol={{span: 12}} 
                         onFinish={this.onFinish}
                         autoComplete="off"
                     >
                         <Form.Item
-                            label="电子邮箱"
+                            label="邮箱"
                             name="email"
                             rules={[
                                 {
@@ -122,7 +129,7 @@ export default class Register extends Component  {
                             注册
                         </Button>
 
-                        <Link to='/login' className='linkLogin'>返回登录</Link>
+                        <Button type="text" ghost className='linkLogin' size='small' onClick={this.onLogin}>返回登录</Button>
                         </Form.Item>
                     </Form>
                 </div>
