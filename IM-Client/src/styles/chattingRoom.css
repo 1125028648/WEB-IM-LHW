@@ -1,13 +1,14 @@
-.chatting-room {
+.chatting-page {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 100%;
     height: 100%;
 }
+
 .message-bubble {
     margin-bottom: 10px;
 }
+
 .message-frame {
     display: inline-block;
     height: auto;
@@ -17,10 +18,48 @@
     padding-left: 5px;
     padding-right: 5px;
 }
-.chatting-page {
-    flex: 1;
-    width: 100%;
+
+.chatting-messages {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    flex-grow: 1;
+}
+
+.chatting-room {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.myEmos {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.emoList {
+    margin-bottom: 5px;
+    width: 100px;
+    position: relative;
+}
+
+.emoList:hover .buttons{
+    display: flex !important;
+}
+
+.buttons {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    background-color: rgba(80, 80, 80, 0.5);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
 }

@@ -56,24 +56,8 @@ export default class HomePage extends Component{
             if(!res.flag) {
                 message.error(res.message);
             }else{
-                this.showUnreadMessageCnt(res.data).then( () => {
-                    this.receiveNewMessage();
-                })
+                this.showUnreadMessageCnt(res.data);
             }
-        })
-    }
-
-    showUnreadMessageCnt = data => {
-        return new Promise( (resolve) => {
-            const {unreadMessageCnt, totalUnreadMessageCnt} = this.state;
-            data.forEach( roomdata => {
-                this.setState( {
-                    unreadMessageCnt: Object.assign(unreadMessageCnt, {[roomdata.room_id] : roomdata.count}),
-                    totalUnreadMessageCnt: totalUnreadMessageCnt + roomdata.count,
-                })
-                return 0;
-            })
-            resolve();
         })
     }
 
@@ -164,32 +148,55 @@ export default class HomePage extends Component{
 
                 this.setState({
                     rooms: res.data.data,
-                });
+                }, resolve);
             });
-
-            resolve();
         });
     }
     
+    showUnreadMessageCnt = data => {
+        const unreadMessageCnt = {};
+        let totalUnreadMessageCnt = 0;
+        data.forEach( roomdata => {
+            Object.assign(unreadMessageCnt, {[roomdata.room_id] : roomdata.count});
+            totalUnreadMessageCnt += roomdata.count;
+        });
+        this.setState( {
+            unreadMessageCnt,
+            totalUnreadMessageCnt,
+        }, () => {
+            this.receiveNewMessage();
+        });
+    }
+
     //显示新消息数
     receiveNewMessage = () => {
+        const sortedRooms = this.state.rooms.sort( (a, b) => (this.state.unreadMessageCnt[b.room_id] || 0) - (this.state.unreadMessageCnt[a.room_id] || 0) );
+        this.setState({
+            rooms: sortedRooms,
+        });
         this.state.socket.on("newMessage", newMessage => {
             //newMessage: {room: roomid, message: {sender:xx, content:xx}}
             if(newMessage.sender !== this.state.user.id && newMessage.room !== this.state.selectedRoom) {
-                const {unreadMessageCnt, totalUnreadMessageCnt} = this.state;
+                const {unreadMessageCnt} = this.state;
                 const unreadcnt = unreadMessageCnt[newMessage.room] || 0;
                 // console.log(`unread: ${unreadcnt}`)
                 this.setState({
                     unreadMessageCnt: Object.assign(unreadMessageCnt, {[newMessage.room] : unreadcnt+1}),
-                    totalUnreadMessageCnt: totalUnreadMessageCnt + 1,
-                })
+                    totalUnreadMessageCnt: this.state.totalUnreadMessageCnt + 1,
+                }, () => { //新消息窗口置顶
+                    const {rooms} = this.state;
+                    const crtIdx = rooms.findIndex(room => String(room.room_id) === String(newMessage.room));
+                    const crtRoom = rooms[crtIdx];
+                    for(let i = crtIdx-1; i >= 0; --i) {
+                        rooms[i+1] = rooms[i];
+                    }
+                    rooms[0] = crtRoom;
+                    this.setState( {
+                        rooms,
+                    });
+                });
             }
-            this.setState( {
-                rooms: this.state.rooms.sort((frontroom, backroom) => 
-                    this.state.unreadMessageCnt[backroom.room_id] - this.state.unreadMessageCnt[frontroom.room_id]
-                    ),
-            })
-        }) 
+        });
     }
 
     onMessageTest = ()=>{
@@ -267,7 +274,7 @@ export default class HomePage extends Component{
             <Layout className='homePage'>
                 <Header className='header' >
                     <Avatar size={40} src={fileUrl} />
-                    <Button style={{display: "none"}} type="primary" onClick={this.onMessageTest} danger>测试</Button>
+                    {/* <Button type="primary" onClick={this.onMessageTest} danger>测试</Button> */}
                     <span style={{marginLeft: 15, color: 'white', fontSize: 16}}>{this.state.user.nickname}</span>
                     <Button type="primary" style={{float: 'right', marginTop: 16}} onClick={this.onQuit} danger>登出</Button>
                 </Header>
@@ -278,11 +285,11 @@ export default class HomePage extends Component{
                             <Badge count={this.state.totalUnreadMessageCnt} size='small' />
                         </div>
                         <Menu
-                        mode='inline'
-                        openKeys={this.state.openKeys}
-                        onOpenChange={this.onOpenChange}
-                        style={{ height: '100%', borderRight: 0}}
-                        onClick={this.onClickFunction}
+                            mode='inline'
+                            openKeys={this.state.openKeys}
+                            onOpenChange={this.onOpenChange}
+                            style={{ height: '100%', borderRight: 0}}
+                            onClick={this.onClickFunction}
                         >
                             <SubMenu key='MessageList' icon={<MessageOutlined />} title='消息列表'>
                                 {this.state.rooms.map((room) => (
@@ -312,14 +319,14 @@ export default class HomePage extends Component{
                     </Sider>
                     <Layout style={{ padding: '24px 24px' }}>
                         <Content 
-                        className='site-layout-background'
-                        style={{
-                            padding: 24,
-                            margin: 0,
-                            minHeight: 280,
-                        }}
+                            className='site-layout-background'
+                            style={{
+                                padding: 24,
+                                margin: 0,
+                                minHeight: 280,
+                            }}
                         >  
-                            {!this.state.menuSelectKey.length ? <iframe src={'http://spielzeugz.de/html5/liquid-particles-3D/'} height={390} width={600}/> : null}
+                            {!this.state.menuSelectKey.length ? <iframe title='解压' src={'http://spielzeugz.de/html5/liquid-particles-3D/'} height="100%" width="100%"/> : null}
                             {this.state.selectedRoom ? <ChattingRoom key={this.state.selectedRoom} room={this.state.selectedRoom} user={this.state.user} socket={this.state.socket} /> : null }
                             {this.state.menuSelectKey === 'friendList' ? <FriendTable user={this.state.user}/> : null}
                             {this.state.menuSelectKey === 'addFriend' ? <FriendAddTable user={this.state.user} /> : null}

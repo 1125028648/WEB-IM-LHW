@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { Navigate, Link } from "react-router-dom";
+import { Navigate} from "react-router-dom";
 import '../../styles/register.css';
 
 export default class Register extends Component  {

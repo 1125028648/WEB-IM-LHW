@@ -1,6 +1,7 @@
 mysqlConn.js
 .gitignore
 uploads
+emo
 # Logs
 logs
 *.log

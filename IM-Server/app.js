@@ -324,7 +324,7 @@ router.post('/upload', upload.single('avatar'), async(ctx, next) => {
 });
 
 // 上传表情包并保存记录
-router.post('/uploadEmo', uploadEmo.single('avatar'), async(ctx, next) =>{
+router.post('/uploadEmo', uploadEmo.single('emo'), async(ctx, next) =>{
 
     let {id} = ctx.session.user;
 
