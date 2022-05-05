@@ -337,6 +337,19 @@ class Test extends Component{
         })
     }
 
+    onDeleteEmo = ()=>{
+        this.$axios({
+            method: 'get',
+            url: '/query/emo/delete',
+            params: {
+                userId: 1,
+                emoName: '1650695182657.jpg',
+            }
+        }).then( res => {
+            console.log(res.data);
+        })
+    }
+
     render(){
         return (
             <div>
@@ -367,6 +380,7 @@ class Test extends Component{
 
                 <Button onClick={this.onQueryRoomNoReadCount}>查询未读记录数</Button>
                 <Button onClick={this.onQueryEmo}>查询表情包</Button>
+                <Button onClick={this.onDeleteEmo}>删除表情包</Button>
             </div>
         )
     }

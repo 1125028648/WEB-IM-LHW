@@ -353,6 +353,23 @@ router.get('/query/emo', async (ctx, next) =>{
     }
 });
 
+// 表情包删除
+router.get('/query/emo/delete', async (ctx, next) =>{
+    var res = {
+        flag: false,
+        message: 'Please login first.'
+    }
+
+    if(ctx.session.user){
+        let {userId, emoName} = ctx.request.query;
+        await emoMapper.deleteEmo(db, userId, emoName).then(response =>{
+            ctx.body = response;
+        });
+    }else{
+        ctx.body = res;
+    } 
+})
+
 // 查询已加入 room
 router.get('/rooms/query', async (ctx, next) =>{
     var res = {

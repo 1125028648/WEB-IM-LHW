@@ -44,3 +44,24 @@ exports.queryEmo = (db, userId) =>{
         })
     })
 }
+
+exports.deleteEmo = (db, userId, emoName) =>{
+    return new Promise((resolve, reject) =>{
+        let sql = `DELETE FROM emo WHERE user_id = ? AND emo_name = ?`;
+
+        db.query(sql, [userId, emoName], function(err, results, fields){
+            if(err) {
+                resolve({
+                    flag: false,
+                    message: 'error'
+                });
+                return;
+            };
+
+            resolve({
+                flag: true,
+                message: 'success',
+            });
+        })
+    })
+}

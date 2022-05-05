@@ -178,9 +178,10 @@ export default class ChattingRoom extends Component {
         return () => {
             this.$axios({
                 method: 'get',
-                url: 'query/deleteEmo',
+                url: '/query/emo/delete',
                 params: {
-                    emo_name,
+                    userId: this.user.id,
+                    emoName: emo_name,
                 }
             }).then( res => {
                 if(!res.data.flag) {
