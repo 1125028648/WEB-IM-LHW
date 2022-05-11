@@ -1,7 +1,6 @@
 import React, { Component } from "react"
-import { Table, Popconfirm, Button, message, Image } from "antd"
+import { Table, Popconfirm, Button, message, Avatar } from "antd"
 import Modal from "antd/lib/modal/Modal"
-import { GroupOutlined } from "@ant-design/icons"
 import axios from 'axios'
 
 export default class RoomTable extends Component {
@@ -88,18 +87,15 @@ export default class RoomTable extends Component {
       },
       {
         title: "生日",
-        dataIndex: "sex",
+        dataIndex: "birthday",
       },
       {
         title: "头像",
-        dataIndex: "sex",
+        dataIndex: "picture",
         render: img => {
           if (img) {
             return (
-              <Image
-              width={200}
-              src={img}
-            />
+              <Avatar src={this.$imageurl + img} size={50}/>
             )
           } else {
             return (<div></div>)
@@ -171,7 +167,8 @@ export default class RoomTable extends Component {
       message.error(res.data.message)
     }
     res.data.data.forEach((element) => {
-      element.key = element.id
+      element.key = element.id;
+      element.sex = element.sex === 1 ? '男' : '女';
     })
     this.setState({dataSourceRoomInfo: res.data.data})
     this.setState({isModalVisible: true})
