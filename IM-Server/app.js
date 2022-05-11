@@ -541,7 +541,7 @@ router.post('/rooms/delete', async (ctx, next) =>{
         flag: false,
         message: 'Please login first.'
     }
-
+    console.log(ctx.request.body)
     if(ctx.session.user){
         let {roomId, userId} = ctx.request.body;
         await roomMapper.deleteRoom(db, userId, roomId).then(response =>{

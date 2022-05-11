@@ -186,7 +186,7 @@ exports.receiveMessage = (db, message) =>{
 // 查询群
 exports.queryRoomList = (db, userId) => {
     return new Promise((resolve, reject) =>{
-        let sql = `SELECT r.id AS room_id, r.room_name FROM room_join rj, rooms r 
+        let sql = `SELECT r.id AS room_id, r.room_name, r.creator_id FROM room_join rj, rooms r 
         WHERE r.id = rj.room_id AND r.room_name NOT LIKE '%-%' AND rj.user_id = ?`;
 
         db.query(sql, [userId], function(err, results, fields){
@@ -493,13 +493,13 @@ exports.exitRoom = (db, roomId, userId) =>{
 exports.deleteRoom = (db, userId, roomId) =>{
     return new Promise((resolve, reject) =>{
         let sql = `DELETE FROM rooms WHERE id = ? AND creator_id = ?`;
-
         db.query(sql, [roomId, userId], function(err, results, fields){
             if(err){
                 resolve({
                     flag: false,
                     message: 'error'
                 });
+                console.log(err)
                 return;
             }
 

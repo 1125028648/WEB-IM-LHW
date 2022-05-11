@@ -174,23 +174,20 @@ export default class ChattingRoom extends Component {
     }
 
     //删除表情
-    onDeleteEmo = emo => {
+    onDeleteEmo = emo_name => {
         return () => {
             this.$axios({
                 method: 'get',
                 url: '/query/emo/delete',
                 params: {
                     userId: this.user.id,
-                    emoName: emo.emo_name,
+                    emoName: emo_name,
                 }
             }).then( res => {
                 if(!res.data.flag) {
                     message.error(res.data.message);
                 }else {
                     message.success('成功删除表情');
-                    this.setState( {
-                        myEmos: this.state.myEmos.filter( e => e !== emo)
-                    });
                 }
             })
         }
@@ -245,7 +242,7 @@ export default class ChattingRoom extends Component {
                                 <img alt="emo" width={100} src={emourl} />
                                 <div className='buttons'>
                                     <Button style={{display: 'block'}} type='primary' shape='round' onClick={this.onSendEmo(emourl)}>发送</Button>
-                                    <Button style={{display: 'block'}} type='primary' shape='round' danger onClick={this.onDeleteEmo(emo)}>删除</Button>
+                                    <Button style={{display: 'block'}} type='primary' shape='round' danger onClick={this.onDeleteEmo(emo.emo_name)}>删除</Button>
                                 </div>
                             </div>
                             )
