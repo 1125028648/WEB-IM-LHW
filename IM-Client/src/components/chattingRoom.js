@@ -212,19 +212,19 @@ export default class ChattingRoom extends Component {
                 <div style={{ marginTop: 8 }}>上传图片表情</div>
             </div>
         );
-
+        
         return (
             <div className='chatting-room'>
                 <div className='chatting-page'>
                     <div className='chatting-messages'>
-                        {this.state.messages.map((message, index) => {
-                            return <MessageBubble className="message-bubble" 
+                        {this.state.messages.map((message, index) => 
+                            <MessageBubble className="message-bubble" 
                                 key={index} {...message} 
                                 avatarPath={this.state.memberInfo[message.send_id].avatarPath} 
                                 nickname={this.state.memberInfo[message.send_id].nickname}
                                 socket={this.socket} 
                                 user={this.user.id} 
-                            />}
+                            />
                         )}
                         <div id="messagesEndRef" />
                     </div>

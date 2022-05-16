@@ -3,6 +3,7 @@
     flex-direction: column;
     align-items: flex-start;
     height: 100%;
+    width: 100%;
 }
 
 .message-bubble {
@@ -24,6 +25,7 @@
     flex-direction: column;
     overflow-y: auto;
     flex-grow: 1;
+    width: 100%;
 }
 
 .chatting-room {
