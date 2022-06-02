@@ -220,8 +220,8 @@ export default class ChattingRoom extends Component {
                         {this.state.messages.map((message, index) => 
                             <MessageBubble className="message-bubble" 
                                 key={index} {...message} 
-                                avatarPath={this.state.memberInfo[message.send_id].avatarPath} 
-                                nickname={this.state.memberInfo[message.send_id].nickname}
+                                avatarPath={this.state.memberInfo[message.send_id]?.avatarPath || null} 
+                                nickname={this.state.memberInfo[message.send_id]?.nickname || null}
                                 socket={this.socket} 
                                 user={this.user.id} 
                             />
